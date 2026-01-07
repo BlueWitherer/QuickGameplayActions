@@ -1,0 +1,74 @@
+{
+    "geode": "4.10.0",
+    "gd": {
+        "win": "2.2074",
+        "android": "2.2074",
+        "mac": "2.2074",
+        "ios": "2.2074"
+    },
+    "id": "cheeseworks.quickgameplayactions",
+    "name": "Quick Gameplay Actions",
+    "version": "1.0.0",
+    "developers": [
+        "Cheeseworks"
+    ],
+    "description": "Mobile-friendly UI to do stuff quick in-game.",
+    "links": {
+        "source": "https://github.com/BlueWitherer/QuickGameplayActions",
+        "homepage": "https://www.cheeseworks.gay/",
+        "community": "https://www.dsc.gg/cheeseworks"
+    },
+    "tags": [
+        "offline",
+        "gameplay",
+        "enhancement"
+    ],
+    "settings": {
+        "btns": {
+            "type": "title",
+            "name": "Features",
+            "description": "The features you want to easily access in-game."
+        },
+        "restart": {
+            "type": "bool",
+            "name": "Restart Level",
+            "description": "Create the button to restart the level.",
+            "default": true
+        },
+        "practice": {
+            "type": "bool",
+            "name": "Practice Mode",
+            "description": "Create the button to toggle Practice Mode.",
+            "default": true
+        },
+        "exit": {
+            "type": "bool",
+            "name": "Exit Level",
+            "description": "Create the button to exit the level.",
+            "default": false
+        },
+        "ui": {
+            "type": "title",
+            "name": "Interface",
+            "description": "Customize your interface."
+        },
+        "scale": {
+            "type": "float",
+            "name": "Scale",
+            "description": "Scale the menu.",
+            "default": 1,
+            "min": 0.25,
+            "max": 2.5,
+            "control": {
+                "input": true,
+                "slider": true,
+                "slider-step": 0.125,
+                "arrows": true,
+                "arrow-step": 0.25,
+                "big-arrows": true,
+                "big-arrow-step": 0.5
+            }
+        }
+    },
+    "early-load": false
+}
