@@ -1,5 +1,5 @@
 # [<img src="logo.png" width="25" alt="The mod's logo." />](https://www.geode-sdk.org/mods/cheeseworks.quickgameplayactions) Quick Gameplay Actions
-Mobile-friendly UI to do stuff quick in-game.
+Mobile-friendly UI for quick in-game actions.
 
 ---
 

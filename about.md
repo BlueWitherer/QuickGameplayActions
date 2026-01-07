@@ -1,5 +1,5 @@
 # Quick Gameplay Actions
-**Mobile-friendly UI to do stuff quick in-game.**
+**Mobile-friendly UI for quick in-game actions.**
 
 *by [Cheeseworks](user:6408873)!*
 
