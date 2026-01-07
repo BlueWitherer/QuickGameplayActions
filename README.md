@@ -20,7 +20,7 @@ This mod adds a menu in the level UI to work with your gameplay more quickly!
 ---
 
 ### Menu
-A menu will appear in-game, tt'll have your essentials such as practice mode and restart level. Since the intention is for the player to do stuff quicker, these buttons will have no confirmation pop-up and will immediately function as intended.
+A menu will appear in-game, it'll have your essentials such as practice mode and restart level. Since the intention is for the player to do stuff quicker, these buttons will have no confirmation pop-up and will immediately function as intended.
 
 You can change which buttons you want to actually use on this menu in the mod's settings.
 
