@@ -68,6 +68,23 @@
                 "big-arrows": true,
                 "big-arrow-step": 0.5
             }
+        },
+        "opacity": {
+            "type": "int",
+            "name": "Opacity",
+            "description": "Change the opacity of the menu.",
+            "default": 200,
+            "min": 10,
+            "max": 255,
+            "control": {
+                "input": true,
+                "slider": true,
+                "slider-step": 1,
+                "arrows": true,
+                "arrow-step": 10,
+                "big-arrows": true,
+                "big-arrow-step": 20
+            }
         }
     },
     "early-load": false
