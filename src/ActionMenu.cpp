@@ -10,6 +10,10 @@ public:
 
     Ref<CircleButtonSprite> m_sprite = nullptr;
 
+    bool m_useRestart = Mod::get()->getSettingValue<bool>("restart");
+    bool m_usePractice = Mod::get()->getSettingValue<bool>("practice");
+    bool m_useExit = Mod::get()->getSettingValue<bool>("exit");
+
     float m_scale = static_cast<float>(Mod::get()->getSettingValue<double>("scale"));
     int64_t m_opacity = Mod::get()->getSettingValue<int64_t>("opacity");
 
@@ -41,10 +45,11 @@ bool ActionMenu::init(PlayLayer* pl) {
     setAnchorPoint({ 0.5, 0.5 });
     setTouchMode(kCCTouchesOneByOne);
     setTouchPriority(-512);
+    setTouchEnabled(true);
     setZOrder(9999);
 
     m_impl->m_sprite = CircleButtonSprite::createWithSpriteFrameName("edit_areaModeBtn04_001.png");
-    m_impl->m_sprite->setScale(m_impl->m_scale);
+    m_impl->m_sprite->setScale(m_impl->m_scale * 0.875f);
     m_impl->m_sprite->setAnchorPoint({ 0.5, 0.5 });
 
     setContentSize(m_impl->m_sprite->getScaledContentSize());
@@ -56,12 +61,90 @@ bool ActionMenu::init(PlayLayer* pl) {
 
     addChild(m_impl->m_sprite, 9);
 
+    auto layout = RowLayout::create()
+        ->setGap(2.5f)
+        ->setAutoScale(true)
+        ->setAutoGrowAxis(0.f);
+
+    auto menu = CCMenu::create();
+    menu->setID("actions-menu");
+    menu->setAnchorPoint({ 0, 1 });
+    menu->setContentSize({ 0.f, 25.f });
+    menu->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
+    menu->setLayout(layout);
+
+    if (m_impl->m_useRestart) {
+        auto btnSprite = CCSprite::createWithSpriteFrameName("GJ_replayBtn_001.png");
+        btnSprite->setScale(m_impl->m_scale);
+
+        auto btn = CCMenuItemSpriteExtra::create(
+            btnSprite,
+            this,
+            menu_selector(ActionMenu::onRestart)
+        );
+        btn->setID("restart-btn");
+
+        menu->addChild(btn);
+    };
+
+    if (m_impl->m_usePractice) {
+        auto btnSprite = CCSprite::createWithSpriteFrameName("GJ_practiceBtn_001.png");
+        btnSprite->setScale(m_impl->m_scale);
+
+        auto btn = CCMenuItemSpriteExtra::create(
+            btnSprite,
+            this,
+            menu_selector(ActionMenu::onPractice)
+        );
+        btn->setID("practice-btn");
+
+        menu->addChild(btn);
+    };
+
+    if (m_impl->m_useExit) {
+        auto btnSprite = CCSprite::createWithSpriteFrameName("GJ_menuBtn_001.png");
+        btnSprite->setScale(m_impl->m_scale);
+
+        auto btn = CCMenuItemSpriteExtra::create(
+            btnSprite,
+            this,
+            menu_selector(ActionMenu::onExit)
+        );
+        btn->setID("exit-btn");
+
+        menu->addChild(btn);
+    };
+
+    addChild(menu, 1);
+    menu->updateLayout();
+
+    auto menuBg = CCScale9Sprite::create("square02_001.png");
+    menuBg->setScale(0.5f);
+    menuBg->setOpacity(m_impl->m_opacity / 2);
+    menuBg->setAnchorPoint(menu->getAnchorPoint());
+    menuBg->setContentSize(menu->getScaledContentSize() * 2);
+    menuBg->setPosition(menu->getPosition());
+
+    addChild(menuBg, 0);
+
     return true;
+};
+
+void ActionMenu::onRestart(CCObject*) {
+    if (m_impl->m_playLayer) m_impl->m_playLayer->resetLevelFromStart();
+};
+
+void ActionMenu::onPractice(CCObject*) {
+    if (m_impl->m_playLayer) m_impl->m_playLayer->togglePracticeMode(!m_impl->m_playLayer->m_isPracticeMode);
+};
+
+void ActionMenu::onExit(CCObject*) {
+    if (m_impl->m_playLayer) m_impl->m_playLayer->onQuit();
 };
 
 void ActionMenu::setOpacity(GLubyte opacity) {
     m_impl->m_opacity = opacity;
-    if (m_impl->m_sprite) m_impl->m_sprite->setOpacity(isVisible() ? opacity : 0);
+    if (m_impl->m_sprite) m_impl->m_sprite->setOpacity(opacity);
 };
 
 void ActionMenu::setScale(float scale) {
@@ -77,14 +160,6 @@ void ActionMenu::setScale(float scale) {
 
 void ActionMenu::onScaleEnd() {
     m_impl->m_isAnimating = false;
-};
-
-int64_t ActionMenu::getOpacitySetting() const {
-    return m_impl->m_opacity;
-};
-
-float ActionMenu::getScaleSetting() const {
-    return m_impl->m_scale;
 };
 
 bool ActionMenu::ccTouchBegan(CCTouch* touch, CCEvent* ev) {
