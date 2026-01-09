@@ -14,6 +14,7 @@ public:
     Ref<CircleButtonSprite> m_sprite = nullptr;
 
     CCMenu* m_menu = nullptr;
+    CCScale9Sprite* m_menuBg = nullptr;
 
     bool m_useRestart = qga->getSettingValue<bool>("restart");
     bool m_usePractice = qga->getSettingValue<bool>("practice");
@@ -76,7 +77,7 @@ bool ActionMenu::init(PlayLayer* pl) {
     m_impl->m_menu->setID("actions-menu");
     m_impl->m_menu->setAnchorPoint({ 0, 1 });
     m_impl->m_menu->setContentSize({ 0.f, 25.f });
-    m_impl->m_menu->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
+    m_impl->m_menu->setPosition({ (getScaledContentWidth() / 2.f) + 5.f, getScaledContentHeight() / 2.f });
     m_impl->m_menu->setLayout(layout);
 
     std::vector<ActionItem> btns = {
@@ -85,7 +86,7 @@ bool ActionMenu::init(PlayLayer* pl) {
         { m_impl->m_useExit, "GJ_menuBtn_001.png", "exit-btn", menu_selector(ActionMenu::onExit) },
     };
 
-    if (m_impl->m_playLayer->m_isPlatformer) btns.push_back({ m_impl->m_useRestart, "GJ_replayFullBtn_001.png", "full-restart-btn", menu_selector(ActionMenu::onFullRestart) });
+    if (pl->m_isPlatformer) btns.push_back({ m_impl->m_useRestart, "GJ_replayFullBtn_001.png", "full-restart-btn", menu_selector(ActionMenu::onFullRestart) });
 
     for (auto const& b : btns) {
         if (b.enabled) {
@@ -108,14 +109,14 @@ bool ActionMenu::init(PlayLayer* pl) {
     addChild(m_impl->m_menu, 1);
     m_impl->m_menu->updateLayout();
 
-    auto menuBg = CCScale9Sprite::create("square02_001.png");
-    menuBg->setScale(0.5f);
-    menuBg->setOpacity(m_impl->m_opacity / 2);
-    menuBg->setAnchorPoint(m_impl->m_menu->getAnchorPoint());
-    menuBg->setContentSize(m_impl->m_menu->getScaledContentSize() * 2);
-    menuBg->setPosition(m_impl->m_menu->getPosition());
+    m_impl->m_menuBg = CCScale9Sprite::create("square02_001.png");
+    m_impl->m_menuBg->setScale(0.5f);
+    m_impl->m_menuBg->setOpacity(m_impl->m_opacity / 2);
+    m_impl->m_menuBg->setAnchorPoint(m_impl->m_menu->getAnchorPoint());
+    m_impl->m_menuBg->setContentSize({ (m_impl->m_menu->getScaledContentWidth() + 10.f) * 2.f, m_impl->m_menu->getScaledContentHeight() * 2.f });
+    m_impl->m_menuBg->setPosition(m_impl->m_menu->getPosition());
 
-    addChild(menuBg, 0);
+    addChild(m_impl->m_menuBg, 0);
 
     return true;
 };
@@ -149,6 +150,9 @@ void ActionMenu::setScale(float scale) {
             m_impl->m_sprite->setScale(scale);
             setContentSize(m_impl->m_sprite->getScaledContentSize());
         };
+
+        if (m_impl->m_menu) m_impl->m_menu->setScale(scale);
+        if (m_impl->m_menuBg) m_impl->m_menuBg->setScale(scale);
     };
 };
 
@@ -198,7 +202,12 @@ void ActionMenu::ccTouchMoved(CCTouch* touch, CCEvent* ev) {
 };
 
 void ActionMenu::ccTouchEnded(CCTouch* touch, CCEvent* ev) {
-    if (!m_impl->m_isMoving && m_impl->m_toggleOnPress) m_impl->m_menu->setVisible(!m_impl->m_menu->isVisible());
+    if (!m_impl->m_isMoving && m_impl->m_toggleOnPress) {
+        if (m_impl->m_menu) {
+            m_impl->m_menu->setVisible(!m_impl->m_menu->isVisible());
+            if (m_impl->m_menuBg) m_impl->m_menuBg->setVisible(m_impl->m_menu->isVisible());
+        };
+    };
 
     // reset state
     m_impl->m_isDragging = false;
