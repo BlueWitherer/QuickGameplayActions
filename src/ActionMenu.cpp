@@ -204,8 +204,12 @@ void ActionMenu::ccTouchMoved(CCTouch* touch, CCEvent* ev) {
 void ActionMenu::ccTouchEnded(CCTouch* touch, CCEvent* ev) {
     if (!m_impl->m_isMoving && m_impl->m_toggleOnPress) {
         if (m_impl->m_menu) {
-            m_impl->m_menu->setVisible(!m_impl->m_menu->isVisible());
-            if (m_impl->m_menuBg) m_impl->m_menuBg->setVisible(m_impl->m_menu->isVisible());
+            auto show = qga->getSavedValue<bool>("visible", m_impl->m_menu->isVisible());
+
+            m_impl->m_menu->setVisible(!show);
+            if (m_impl->m_menuBg) m_impl->m_menuBg->setVisible(!show);
+
+            qga->setSavedValue("visible", !show);
         };
     };
 

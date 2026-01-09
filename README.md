@@ -28,6 +28,12 @@ You can change which buttons you want to actually use on this menu in the mod's 
 
 ---
 
+![preview](previews/preview-1.png)
+![preview](previews/preview-2.png)
+![preview](previews/preview-3.png)
+
+---
+
 ### Changelog
 ###### What's new?!
 **[📜 View the latest updates and patches](./changelog.md)**
