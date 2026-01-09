@@ -218,8 +218,8 @@ void ActionMenu::ccTouchEnded(CCTouch* touch, CCEvent* ev) {
     m_impl->m_isMoving = false;
 
     // store position
-    qga->setSavedValue<float>("menu-x", getPosition().x);
-    qga->setSavedValue<float>("menu-y", getPosition().y);
+    qga->setSavedValue<float>("menu-x", getPositionX());
+    qga->setSavedValue<float>("menu-y", getPositionY());
 
     m_impl->m_isAnimating = true;
 
