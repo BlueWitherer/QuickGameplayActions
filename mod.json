@@ -8,7 +8,7 @@
     },
     "id": "cheeseworks.quickgameplayactions",
     "name": "Quick Gameplay Actions",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "developers": [
         "Cheeseworks"
     ],
@@ -57,7 +57,7 @@
             "name": "Scale",
             "description": "Scale the menu.",
             "default": 0.875,
-            "min": 0.25,
+            "min": 0.5,
             "max": 2.5,
             "control": {
                 "input": true,
@@ -74,7 +74,7 @@
             "name": "Opacity",
             "description": "Change the opacity of the menu.",
             "default": 200,
-            "min": 10,
+            "min": 25,
             "max": 255,
             "control": {
                 "input": true,

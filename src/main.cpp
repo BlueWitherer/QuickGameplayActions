@@ -9,8 +9,6 @@ using namespace geode::prelude;
 class $modify(ActionsPlayLayer, PlayLayer) {
     void setupHasCompleted() {
         PlayLayer::setupHasCompleted();
-
-        auto menu = ActionMenu::create(this);
-        m_uiLayer->addChild(menu, 999);
+        if (auto menu = ActionMenu::create(this)) m_uiLayer->addChild(menu, 99);
     };
 };

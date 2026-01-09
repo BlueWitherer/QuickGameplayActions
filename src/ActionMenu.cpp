@@ -78,7 +78,7 @@ bool ActionMenu::init(PlayLayer* pl) {
     m_impl->m_menu->setID("actions-menu");
     m_impl->m_menu->setAnchorPoint({ 0, 1 });
     m_impl->m_menu->setContentSize({ 0.f, 25.f });
-    m_impl->m_menu->setPosition({ (getScaledContentWidth() / 2.f) + 12.5f, getScaledContentHeight() / 2.f });
+    m_impl->m_menu->setPosition({ (getScaledContentWidth() / 2.f) + 10.f, getScaledContentHeight() / 2.f });
     m_impl->m_menu->setVisible(m_impl->m_show);
     m_impl->m_menu->setLayout(layout);
 
@@ -112,11 +112,11 @@ bool ActionMenu::init(PlayLayer* pl) {
     m_impl->m_menu->updateLayout();
 
     m_impl->m_menuBg = CCScale9Sprite::create("square02_001.png");
-    m_impl->m_menuBg->setScale(0.5f);
+    m_impl->m_menuBg->setScale(0.125f);
     m_impl->m_menuBg->setOpacity(m_impl->m_opacity / 2);
     m_impl->m_menuBg->setAnchorPoint(m_impl->m_menu->getAnchorPoint());
-    m_impl->m_menuBg->setContentSize({ (m_impl->m_menu->getScaledContentWidth() + 25.f) * 2.f, m_impl->m_menu->getScaledContentHeight() * 2.f });
-    m_impl->m_menuBg->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
+    m_impl->m_menuBg->setContentSize({ (m_impl->m_menu->getScaledContentWidth() + 20.f) * 8.f, m_impl->m_menu->getScaledContentHeight() * 8.f });
+    m_impl->m_menuBg->setPosition(m_impl->m_sprite->getPosition());
     m_impl->m_menuBg->setVisible(m_impl->m_show);
 
     addChild(m_impl->m_menuBg, 0);
