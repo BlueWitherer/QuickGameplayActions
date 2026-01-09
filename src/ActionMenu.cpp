@@ -117,6 +117,7 @@ bool ActionMenu::init(PlayLayer* pl) {
     m_impl->m_menuBg->setAnchorPoint(m_impl->m_menu->getAnchorPoint());
     m_impl->m_menuBg->setContentSize({ (m_impl->m_menu->getScaledContentWidth() + 25.f) * 2.f, m_impl->m_menu->getScaledContentHeight() * 2.f });
     m_impl->m_menuBg->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
+    m_impl->m_menuBg->setVisible(m_impl->m_show);
 
     addChild(m_impl->m_menuBg, 0);
 
