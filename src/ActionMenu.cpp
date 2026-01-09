@@ -77,7 +77,7 @@ bool ActionMenu::init(PlayLayer* pl) {
     m_impl->m_menu->setID("actions-menu");
     m_impl->m_menu->setAnchorPoint({ 0, 1 });
     m_impl->m_menu->setContentSize({ 0.f, 25.f });
-    m_impl->m_menu->setPosition({ (getScaledContentWidth() / 2.f) + 5.f, getScaledContentHeight() / 2.f });
+    m_impl->m_menu->setPosition({ (getScaledContentWidth() / 2.f) + 12.5f, getScaledContentHeight() / 2.f });
     m_impl->m_menu->setLayout(layout);
 
     std::vector<ActionItem> btns = {
@@ -113,8 +113,8 @@ bool ActionMenu::init(PlayLayer* pl) {
     m_impl->m_menuBg->setScale(0.5f);
     m_impl->m_menuBg->setOpacity(m_impl->m_opacity / 2);
     m_impl->m_menuBg->setAnchorPoint(m_impl->m_menu->getAnchorPoint());
-    m_impl->m_menuBg->setContentSize({ (m_impl->m_menu->getScaledContentWidth() + 10.f) * 2.f, m_impl->m_menu->getScaledContentHeight() * 2.f });
-    m_impl->m_menuBg->setPosition(m_impl->m_menu->getPosition());
+    m_impl->m_menuBg->setContentSize({ (m_impl->m_menu->getScaledContentWidth() + 25.f) * 2.f, m_impl->m_menu->getScaledContentHeight() * 2.f });
+    m_impl->m_menuBg->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
 
     addChild(m_impl->m_menuBg, 0);
 
