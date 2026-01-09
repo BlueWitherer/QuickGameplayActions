@@ -92,7 +92,7 @@ bool ActionMenu::init(PlayLayer* pl) {
 
     for (auto const& b : btns) {
         if (b.enabled) {
-            auto btnSprite = CCSprite::createWithSpriteFrameName(b.sprite.c_str());
+            auto btnSprite = CCSprite::createWithSpriteFrameName(b.sprite);
             btnSprite->setScale(m_impl->m_scale);
             btnSprite->setOpacity(m_impl->m_opacity);
 
@@ -106,7 +106,6 @@ bool ActionMenu::init(PlayLayer* pl) {
             m_impl->m_menu->addChild(btn);
         };
     };
-    btns.clear();
 
     addChild(m_impl->m_menu, 1);
     m_impl->m_menu->updateLayout();

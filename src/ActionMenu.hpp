@@ -11,19 +11,9 @@ private:
 
     struct ActionItem {
         bool enabled;
-        std::string sprite;
-        std::string id;
+        const char* sprite;
+        const char* id;
         SEL_MenuHandler selector;
-
-        ActionItem(
-            bool e,
-            std::string spr,
-            std::string i,
-            SEL_MenuHandler sel
-        ) : enabled(e),
-            sprite(std::move(spr)),
-            id(std::move(i)),
-            selector(sel) {};
     };
 
 protected:
