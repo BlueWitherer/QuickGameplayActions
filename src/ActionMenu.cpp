@@ -4,6 +4,9 @@
 
 using namespace geode::prelude;
 
+// it's modding time >:3
+static auto qga = Mod::get();
+
 class ActionMenu::Impl final {
 public:
     Ref<PlayLayer> m_playLayer = nullptr;
@@ -12,12 +15,14 @@ public:
 
     CCMenu* m_menu = nullptr;
 
-    bool m_useRestart = Mod::get()->getSettingValue<bool>("restart");
-    bool m_usePractice = Mod::get()->getSettingValue<bool>("practice");
-    bool m_useExit = Mod::get()->getSettingValue<bool>("exit");
+    bool m_useRestart = qga->getSettingValue<bool>("restart");
+    bool m_usePractice = qga->getSettingValue<bool>("practice");
+    bool m_useExit = qga->getSettingValue<bool>("exit");
 
-    float m_scale = static_cast<float>(Mod::get()->getSettingValue<double>("scale"));
-    int64_t m_opacity = Mod::get()->getSettingValue<int64_t>("opacity");
+    bool m_toggleOnPress = qga->getSettingValue<bool>("toggle-press");
+
+    float m_scale = static_cast<float>(qga->getSettingValue<double>("scale"));
+    int64_t m_opacity = qga->getSettingValue<int64_t>("opacity");
 
     CCSize const m_screenSize = CCDirector::sharedDirector()->getWinSize();
     CCPoint m_dragStartPos = { 0, 0 };
@@ -39,8 +44,8 @@ bool ActionMenu::init(PlayLayer* pl) {
     if (!CCLayer::init()) return false;
 
     // get the saved position
-    auto x = Mod::get()->getSavedValue<float>("menu-x", 75.f);
-    auto y = Mod::get()->getSavedValue<float>("menu-y", m_impl->m_screenSize.height - 75.f);
+    auto x = qga->getSavedValue<float>("menu-x", 75.f);
+    auto y = qga->getSavedValue<float>("menu-y", m_impl->m_screenSize.height - 75.f);
 
     setID("menu"_spr);
     setPosition({ x, y });
@@ -183,8 +188,8 @@ void ActionMenu::ccTouchMoved(CCTouch* touch, CCEvent* ev) {
         auto const touchLocation = touch->getLocation();
         auto const newLocation = ccpAdd(touchLocation, m_impl->m_dragStartPos);
 
-        auto clampX = std::max(0.f, std::min(newLocation.x, m_impl->m_screenSize.width));
-        auto clampY = std::max(0.f, std::min(newLocation.y, m_impl->m_screenSize.height));
+        auto clampX = std::max(0.f, std::min(newLocation.x, m_impl->m_screenSize.width - getScaledContentWidth()));
+        auto clampY = std::max(0.f, std::min(newLocation.y, m_impl->m_screenSize.height - getScaledContentHeight()));
 
         setPosition(ccp(clampX, clampY));
 
@@ -193,13 +198,15 @@ void ActionMenu::ccTouchMoved(CCTouch* touch, CCEvent* ev) {
 };
 
 void ActionMenu::ccTouchEnded(CCTouch* touch, CCEvent* ev) {
+    if (!m_impl->m_isMoving && m_impl->m_toggleOnPress) m_impl->m_menu->setVisible(!m_impl->m_menu->isVisible());
+
     // reset state
     m_impl->m_isDragging = false;
     m_impl->m_isMoving = false;
 
     // store position
-    Mod::get()->setSavedValue<float>("menu-x", getPosition().x);
-    Mod::get()->setSavedValue<float>("menu-y", getPosition().y);
+    qga->setSavedValue<float>("menu-x", getPosition().x);
+    qga->setSavedValue<float>("menu-y", getPosition().y);
 
     m_impl->m_isAnimating = true;
 

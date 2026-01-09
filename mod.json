@@ -85,6 +85,17 @@
                 "big-arrows": true,
                 "big-arrow-step": 20
             }
+        },
+        "conditions": {
+            "type": "title",
+            "name": "Conditions",
+            "description": "When the action menu will function."
+        },
+        "toggle-press": {
+            "type": "bool",
+            "name": "Toggle on Press",
+            "description": "Toggle the visibility of the menu when pressing the drag button without moving it.",
+            "default": true
         }
     },
     "early-load": false
