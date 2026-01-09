@@ -20,6 +20,7 @@ public:
     bool m_usePractice = qga->getSettingValue<bool>("practice");
     bool m_useExit = qga->getSettingValue<bool>("exit");
 
+    bool m_show = qga->getSavedValue<bool>("visible", true);
     bool m_toggleOnPress = qga->getSettingValue<bool>("toggle-press");
 
     float m_scale = static_cast<float>(qga->getSettingValue<double>("scale"));
@@ -78,6 +79,7 @@ bool ActionMenu::init(PlayLayer* pl) {
     m_impl->m_menu->setAnchorPoint({ 0, 1 });
     m_impl->m_menu->setContentSize({ 0.f, 25.f });
     m_impl->m_menu->setPosition({ (getScaledContentWidth() / 2.f) + 12.5f, getScaledContentHeight() / 2.f });
+    m_impl->m_menu->setVisible(m_impl->m_show);
     m_impl->m_menu->setLayout(layout);
 
     std::vector<ActionItem> btns = {
@@ -204,12 +206,10 @@ void ActionMenu::ccTouchMoved(CCTouch* touch, CCEvent* ev) {
 void ActionMenu::ccTouchEnded(CCTouch* touch, CCEvent* ev) {
     if (!m_impl->m_isMoving && m_impl->m_toggleOnPress) {
         if (m_impl->m_menu) {
-            auto show = qga->getSavedValue<bool>("visible", m_impl->m_menu->isVisible());
+            m_impl->m_menu->setVisible(!m_impl->m_show);
+            if (m_impl->m_menuBg) m_impl->m_menuBg->setVisible(!m_impl->m_show);
 
-            m_impl->m_menu->setVisible(!show);
-            if (m_impl->m_menuBg) m_impl->m_menuBg->setVisible(!show);
-
-            qga->setSavedValue("visible", !show);
+            m_impl->m_show = !qga->setSavedValue("visible", !m_impl->m_show);
         };
     };
 
