@@ -10,6 +10,8 @@ public:
 
     Ref<CircleButtonSprite> m_sprite = nullptr;
 
+    CCMenu* m_menu = nullptr;
+
     bool m_useRestart = Mod::get()->getSettingValue<bool>("restart");
     bool m_usePractice = Mod::get()->getSettingValue<bool>("practice");
     bool m_useExit = Mod::get()->getSettingValue<bool>("exit");
@@ -63,67 +65,50 @@ bool ActionMenu::init(PlayLayer* pl) {
 
     auto layout = RowLayout::create()
         ->setGap(2.5f)
-        ->setAutoScale(true)
         ->setAutoGrowAxis(0.f);
 
-    auto menu = CCMenu::create();
-    menu->setID("actions-menu");
-    menu->setAnchorPoint({ 0, 1 });
-    menu->setContentSize({ 0.f, 25.f });
-    menu->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
-    menu->setLayout(layout);
+    m_impl->m_menu = CCMenu::create();
+    m_impl->m_menu->setID("actions-menu");
+    m_impl->m_menu->setAnchorPoint({ 0, 1 });
+    m_impl->m_menu->setContentSize({ 0.f, 25.f });
+    m_impl->m_menu->setPosition({ getScaledContentWidth() / 2.f, getScaledContentHeight() / 2.f });
+    m_impl->m_menu->setLayout(layout);
 
-    if (m_impl->m_useRestart) {
-        auto btnSprite = CCSprite::createWithSpriteFrameName("GJ_replayBtn_001.png");
-        btnSprite->setScale(m_impl->m_scale);
-
-        auto btn = CCMenuItemSpriteExtra::create(
-            btnSprite,
-            this,
-            menu_selector(ActionMenu::onRestart)
-        );
-        btn->setID("restart-btn");
-
-        menu->addChild(btn);
+    std::vector<ActionItem> btns = {
+        { m_impl->m_useRestart, "GJ_replayBtn_001.png", "restart-btn", menu_selector(ActionMenu::onRestart) },
+        { m_impl->m_usePractice, "GJ_practiceBtn_001.png", "toggle-practice-btn", menu_selector(ActionMenu::onPractice) },
+        { m_impl->m_useExit, "GJ_menuBtn_001.png", "exit-btn", menu_selector(ActionMenu::onExit) },
     };
 
-    if (m_impl->m_usePractice) {
-        auto btnSprite = CCSprite::createWithSpriteFrameName("GJ_practiceBtn_001.png");
-        btnSprite->setScale(m_impl->m_scale);
+    if (m_impl->m_playLayer->m_isPlatformer) btns.push_back({ m_impl->m_useRestart, "GJ_replayFullBtn_001.png", "full-restart-btn", menu_selector(ActionMenu::onFullRestart) });
 
-        auto btn = CCMenuItemSpriteExtra::create(
-            btnSprite,
-            this,
-            menu_selector(ActionMenu::onPractice)
-        );
-        btn->setID("practice-btn");
+    for (auto const& b : btns) {
+        if (b.enabled) {
+            auto btnSprite = CCSprite::createWithSpriteFrameName(b.sprite.c_str());
+            btnSprite->setScale(m_impl->m_scale);
+            btnSprite->setOpacity(m_impl->m_opacity);
 
-        menu->addChild(btn);
+            auto btn = CCMenuItemSpriteExtra::create(
+                btnSprite,
+                this,
+                b.selector
+            );
+            btn->setID(b.id);
+
+            m_impl->m_menu->addChild(btn);
+        };
     };
+    btns.clear();
 
-    if (m_impl->m_useExit) {
-        auto btnSprite = CCSprite::createWithSpriteFrameName("GJ_menuBtn_001.png");
-        btnSprite->setScale(m_impl->m_scale);
-
-        auto btn = CCMenuItemSpriteExtra::create(
-            btnSprite,
-            this,
-            menu_selector(ActionMenu::onExit)
-        );
-        btn->setID("exit-btn");
-
-        menu->addChild(btn);
-    };
-
-    addChild(menu, 1);
-    menu->updateLayout();
+    addChild(m_impl->m_menu, 1);
+    m_impl->m_menu->updateLayout();
 
     auto menuBg = CCScale9Sprite::create("square02_001.png");
     menuBg->setScale(0.5f);
     menuBg->setOpacity(m_impl->m_opacity / 2);
-    menuBg->setAnchorPoint(menu->getAnchorPoint());
-    menuBg->setContentSize(menu->getScaledContentSize() * 2);
-    menuBg->setPosition(menu->getPosition());
+    menuBg->setAnchorPoint(m_impl->m_menu->getAnchorPoint());
+    menuBg->setContentSize(m_impl->m_menu->getScaledContentSize() * 2);
+    menuBg->setPosition(m_impl->m_menu->getPosition());
 
     addChild(menuBg, 0);
 
@@ -131,6 +116,10 @@ bool ActionMenu::init(PlayLayer* pl) {
 };
 
 void ActionMenu::onRestart(CCObject*) {
+    if (m_impl->m_playLayer) m_impl->m_playLayer->resetLevel();
+};
+
+void ActionMenu::onFullRestart(CCObject*) {
     if (m_impl->m_playLayer) m_impl->m_playLayer->resetLevelFromStart();
 };
 
@@ -191,10 +180,13 @@ bool ActionMenu::ccTouchBegan(CCTouch* touch, CCEvent* ev) {
 
 void ActionMenu::ccTouchMoved(CCTouch* touch, CCEvent* ev) {
     if (m_impl->m_isDragging) {
-        CCPoint const touchLocation = touch->getLocation();
-        CCPoint const newLocation = ccpAdd(touchLocation, m_impl->m_dragStartPos);
+        auto const touchLocation = touch->getLocation();
+        auto const newLocation = ccpAdd(touchLocation, m_impl->m_dragStartPos);
 
-        setPosition(newLocation);
+        auto clampX = std::max(0.f, std::min(newLocation.x, m_impl->m_screenSize.width));
+        auto clampY = std::max(0.f, std::min(newLocation.y, m_impl->m_screenSize.height));
+
+        setPosition(ccp(clampX, clampY));
 
         m_impl->m_isMoving = true;
     };
