@@ -1,4 +1,4 @@
-# Quick Gameplay Actions
+# Gameplay Shortcuts
 **Mobile-friendly UI for quick in-game actions.**
 
 *by [Cheeseworks](user:6408873)!*

@@ -14,6 +14,7 @@ private:
         const char* sprite;
         const char* id;
         SEL_MenuHandler selector;
+        float scale = 1.f;
     };
 
 protected:
@@ -25,6 +26,7 @@ protected:
     void onRestart(CCObject*);
     void onFullRestart(CCObject*);
     void onPractice(CCObject*);
+    void onPause(CCObject*);
     void onExit(CCObject*);
 
     void setOpacity(GLubyte opacity);

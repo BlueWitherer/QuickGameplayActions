@@ -9,29 +9,30 @@ static auto qga = Mod::get();
 
 class ActionMenu::Impl final {
 public:
-    Ref<PlayLayer> m_playLayer = nullptr;
+    Ref<PlayLayer> playLayer = nullptr;
 
-    Ref<CircleButtonSprite> m_sprite = nullptr;
+    Ref<CircleButtonSprite> sprite = nullptr;
 
-    CCMenu* m_menu = nullptr;
-    CCScale9Sprite* m_menuBg = nullptr;
+    CCMenu* menu = nullptr;
+    CCScale9Sprite* menuBg = nullptr;
 
-    bool m_useRestart = qga->getSettingValue<bool>("restart");
-    bool m_usePractice = qga->getSettingValue<bool>("practice");
-    bool m_useExit = qga->getSettingValue<bool>("exit");
+    bool useRestart = qga->getSettingValue<bool>("restart");
+    bool usePractice = qga->getSettingValue<bool>("practice");
+    bool usePause = qga->getSettingValue<bool>("pause");
+    bool useExit = qga->getSettingValue<bool>("exit");
 
-    bool m_show = qga->getSavedValue<bool>("visible", true);
-    bool m_toggleOnPress = qga->getSettingValue<bool>("toggle-press");
+    bool show = qga->getSavedValue<bool>("visible", true);
+    bool toggleOnPress = qga->getSettingValue<bool>("toggle-press");
 
-    float m_scale = static_cast<float>(qga->getSettingValue<double>("scale"));
-    int64_t m_opacity = qga->getSettingValue<int64_t>("opacity");
+    float scale = static_cast<float>(qga->getSettingValue<double>("scale"));
+    int64_t opacity = qga->getSettingValue<int64_t>("opacity");
 
-    CCSize const m_screenSize = CCDirector::sharedDirector()->getWinSize();
-    CCPoint m_dragStartPos = { 0, 0 };
+    CCSize const screenSize = CCDirector::sharedDirector()->getWinSize();
+    CCPoint dragStartPos = { 0, 0 };
 
-    bool m_isAnimating = false;
-    bool m_isDragging = false;
-    bool m_isMoving = false;
+    bool isAnimating = false;
+    bool isDragging = false;
+    bool isMoving = false;
 };
 
 ActionMenu::ActionMenu() {
@@ -41,13 +42,13 @@ ActionMenu::ActionMenu() {
 ActionMenu::~ActionMenu() {};
 
 bool ActionMenu::init(PlayLayer* pl) {
-    m_impl->m_playLayer = pl;
+    m_impl->playLayer = pl;
 
     if (!CCLayer::init()) return false;
 
     // get the saved position
     auto x = qga->getSavedValue<float>("menu-x", 75.f);
-    auto y = qga->getSavedValue<float>("menu-y", m_impl->m_screenSize.height - 75.f);
+    auto y = qga->getSavedValue<float>("menu-y", m_impl->screenSize.height - 75.f);
 
     setID("menu"_spr);
     setPosition({ x, y });
@@ -57,44 +58,45 @@ bool ActionMenu::init(PlayLayer* pl) {
     setTouchEnabled(true);
     setZOrder(9999);
 
-    m_impl->m_sprite = CircleButtonSprite::createWithSpriteFrameName("edit_areaModeBtn04_001.png");
-    m_impl->m_sprite->setScale(m_impl->m_scale * 0.875f);
-    m_impl->m_sprite->setAnchorPoint({ 0.5, 0.5 });
+    m_impl->sprite = CircleButtonSprite::createWithSpriteFrameName("edit_areaModeBtn04_001.png");
+    m_impl->sprite->setScale(m_impl->scale * 0.875f);
+    m_impl->sprite->setAnchorPoint({ 0.5, 0.5 });
 
-    setContentSize(m_impl->m_sprite->getScaledContentSize());
+    setContentSize(m_impl->sprite->getScaledContentSize());
 
-    m_impl->m_sprite->setPosition(getScaledContentSize() / 2.f);
+    m_impl->sprite->setPosition(getScaledContentSize() / 2.f);
 
-    setScale(m_impl->m_scale); // set initial scale
-    setOpacity(m_impl->m_opacity); // set initial opacity
+    setScale(m_impl->scale); // set initial scale
+    setOpacity(m_impl->opacity); // set initial opacity
 
-    addChild(m_impl->m_sprite, 9);
+    addChild(m_impl->sprite, 9);
 
     auto layout = RowLayout::create()
         ->setGap(2.5f)
         ->setAutoGrowAxis(0.f);
 
-    m_impl->m_menu = CCMenu::create();
-    m_impl->m_menu->setID("actions-menu");
-    m_impl->m_menu->setAnchorPoint({ 0, 1 });
-    m_impl->m_menu->setContentSize({ 0.f, 25.f });
-    m_impl->m_menu->setPosition({ (getScaledContentWidth() / 2.f) + 7.5f, (getScaledContentHeight() / 2.f) - 2.5f });
-    m_impl->m_menu->setVisible(m_impl->m_show);
-    m_impl->m_menu->setLayout(layout);
+    m_impl->menu = CCMenu::create();
+    m_impl->menu->setID("actions-menu");
+    m_impl->menu->setAnchorPoint({ 0, 1 });
+    m_impl->menu->setContentSize({ 0.f, 25.f });
+    m_impl->menu->setPosition({ (getScaledContentWidth() / 2.f) + 7.5f, (getScaledContentHeight() / 2.f) - 2.5f });
+    m_impl->menu->setVisible(m_impl->show);
+    m_impl->menu->setLayout(layout);
 
     std::vector<ActionItem> btns = {
-        { m_impl->m_useRestart, "GJ_replayBtn_001.png", "restart-btn", menu_selector(ActionMenu::onRestart) },
-        { m_impl->m_usePractice, "GJ_practiceBtn_001.png", "toggle-practice-btn", menu_selector(ActionMenu::onPractice) },
-        { m_impl->m_useExit, "GJ_menuBtn_001.png", "exit-btn", menu_selector(ActionMenu::onExit) },
+        { m_impl->useRestart, "GJ_replayBtn_001.png", "restart-btn", menu_selector(ActionMenu::onRestart) },
+        { m_impl->usePractice, "GJ_practiceBtn_001.png", "toggle-practice-btn", menu_selector(ActionMenu::onPractice) },
+        { m_impl->usePause, "GJ_pauseBtn_001.png", "pause-btn", menu_selector(ActionMenu::onPause), 1.62f },
+        { m_impl->useExit, "GJ_menuBtn_001.png", "exit-btn", menu_selector(ActionMenu::onExit) },
     };
 
-    if (pl->m_isPlatformer) btns.push_back({ m_impl->m_useRestart, "GJ_replayFullBtn_001.png", "full-restart-btn", menu_selector(ActionMenu::onFullRestart) });
+    if (pl->m_isPlatformer) btns.push_back({ m_impl->useRestart, "GJ_replayFullBtn_001.png", "full-restart-btn", menu_selector(ActionMenu::onFullRestart) });
 
     for (auto const& b : btns) {
         if (b.enabled) {
             auto btnSprite = CCSprite::createWithSpriteFrameName(b.sprite);
-            btnSprite->setScale(m_impl->m_scale * 0.875f);
-            btnSprite->setOpacity(m_impl->m_opacity);
+            btnSprite->setScale(m_impl->scale * b.scale);
+            btnSprite->setOpacity(m_impl->opacity);
 
             auto btn = CCMenuItemSpriteExtra::create(
                 btnSprite,
@@ -103,80 +105,89 @@ bool ActionMenu::init(PlayLayer* pl) {
             );
             btn->setID(b.id);
 
-            m_impl->m_menu->addChild(btn);
+            m_impl->menu->addChild(btn);
         };
     };
 
-    addChild(m_impl->m_menu, 1);
-    m_impl->m_menu->updateLayout();
+    addChild(m_impl->menu, 1);
+    m_impl->menu->updateLayout();
 
-    m_impl->m_menuBg = CCScale9Sprite::create("square02_001.png");
-    m_impl->m_menuBg->setScale(0.2f);
-    m_impl->m_menuBg->setOpacity(m_impl->m_opacity / 2);
-    m_impl->m_menuBg->setAnchorPoint(m_impl->m_menu->getAnchorPoint());
-    m_impl->m_menuBg->setContentSize({ (m_impl->m_menu->getScaledContentWidth() + 15.f) * 5.f, (m_impl->m_menu->getScaledContentHeight() * 5.f) + 5.f });
-    m_impl->m_menuBg->setPosition(m_impl->m_sprite->getPosition());
-    m_impl->m_menuBg->setVisible(m_impl->m_show);
+    m_impl->menuBg = CCScale9Sprite::create("square02_001.png");
+    m_impl->menuBg->setScale(0.25f);
+    m_impl->menuBg->setOpacity(m_impl->opacity / 2);
+    m_impl->menuBg->setAnchorPoint(m_impl->menu->getAnchorPoint());
+    m_impl->menuBg->setContentSize({ (m_impl->menu->getScaledContentWidth() + 15.f) * 4.f, (m_impl->menu->getScaledContentHeight() * 4.f) + 5.f });
+    m_impl->menuBg->setPosition(m_impl->sprite->getPosition());
+    m_impl->menuBg->setVisible(m_impl->show);
 
-    addChild(m_impl->m_menuBg, 0);
+    addChild(m_impl->menuBg, 0);
 
     return true;
 };
 
 void ActionMenu::onRestart(CCObject*) {
-    if (m_impl->m_playLayer) m_impl->m_playLayer->resetLevel();
+    if (m_impl->playLayer) m_impl->playLayer->resetLevel();
 };
 
 void ActionMenu::onFullRestart(CCObject*) {
-    if (m_impl->m_playLayer) m_impl->m_playLayer->resetLevelFromStart();
+    if (m_impl->playLayer) m_impl->playLayer->resetLevelFromStart();
 };
 
 void ActionMenu::onPractice(CCObject*) {
-    if (m_impl->m_playLayer) m_impl->m_playLayer->togglePracticeMode(!m_impl->m_playLayer->m_isPracticeMode);
+    if (m_impl->playLayer) m_impl->playLayer->togglePracticeMode(!m_impl->playLayer->m_isPracticeMode);
+};
+
+void ActionMenu::onPause(CCObject*) {
+    if (m_impl->playLayer) m_impl->playLayer->pauseGame(false);
 };
 
 void ActionMenu::onExit(CCObject*) {
-    if (m_impl->m_playLayer) m_impl->m_playLayer->onQuit();
+    if (m_impl->playLayer) {
+        m_impl->playLayer->onQuit();
+
+        // @geode-ignore(unknown-resource)
+        if (auto fmod = FMODAudioEngine::sharedEngine()) fmod->playEffectAsync("quitSound_01.ogg");
+    };
 };
 
 void ActionMenu::setOpacity(GLubyte opacity) {
-    m_impl->m_opacity = opacity;
-    if (m_impl->m_sprite) m_impl->m_sprite->setOpacity(opacity);
+    m_impl->opacity = opacity;
+    if (m_impl->sprite) m_impl->sprite->setOpacity(opacity);
 };
 
 void ActionMenu::setScale(float scale) {
-    m_impl->m_scale = scale;
+    m_impl->scale = scale;
 
-    if (!m_impl->m_isDragging && !m_impl->m_isAnimating) {
-        if (m_impl->m_sprite) {
-            m_impl->m_sprite->setScale(scale);
-            setContentSize(m_impl->m_sprite->getScaledContentSize());
+    if (!m_impl->isDragging && !m_impl->isAnimating) {
+        if (m_impl->sprite) {
+            m_impl->sprite->setScale(scale);
+            setContentSize(m_impl->sprite->getScaledContentSize());
         };
 
-        if (m_impl->m_menu) m_impl->m_menu->setScale(scale);
-        if (m_impl->m_menuBg) m_impl->m_menuBg->setScale(scale);
+        if (m_impl->menu) m_impl->menu->setScale(scale);
+        if (m_impl->menuBg) m_impl->menuBg->setScale(scale);
     };
 };
 
 void ActionMenu::onScaleEnd() {
-    m_impl->m_isAnimating = false;
+    m_impl->isAnimating = false;
 };
 
 bool ActionMenu::ccTouchBegan(CCTouch* touch, CCEvent* ev) {
-    if (m_impl->m_sprite) {
+    if (m_impl->sprite) {
         auto const touchLocation = convertToNodeSpace(touch->getLocation());
-        auto const box = m_impl->m_sprite->boundingBox();
+        auto const box = m_impl->sprite->boundingBox();
 
         if (box.containsPoint(touchLocation)) {
-            m_impl->m_isDragging = true;
+            m_impl->isDragging = true;
 
-            m_impl->m_dragStartPos = ccpSub(getPosition(), touch->getLocation());
+            m_impl->dragStartPos = ccpSub(getPosition(), touch->getLocation());
 
-            m_impl->m_sprite->stopAllActions();
-            m_impl->m_isAnimating = true;
-            m_impl->m_sprite->runAction(CCSequence::createWithTwoActions(
+            m_impl->sprite->stopAllActions();
+            m_impl->isAnimating = true;
+            m_impl->sprite->runAction(CCSequence::createWithTwoActions(
                 CCSpawn::createWithTwoActions(
-                    CCEaseExponentialOut::create(CCScaleTo::create(0.25f, m_impl->m_scale * 0.875f)),
+                    CCEaseExponentialOut::create(CCScaleTo::create(0.25f, m_impl->scale * 0.875f)),
                     CCFadeTo::create(0.25f, 255)
                 ),
                 CCCallFunc::create(this, callfunc_selector(ActionMenu::onScaleEnd))
@@ -190,50 +201,50 @@ bool ActionMenu::ccTouchBegan(CCTouch* touch, CCEvent* ev) {
 };
 
 void ActionMenu::ccTouchMoved(CCTouch* touch, CCEvent* ev) {
-    if (m_impl->m_isDragging) {
+    if (m_impl->isDragging) {
         auto const touchLocation = touch->getLocation();
-        auto const newLocation = ccpAdd(touchLocation, m_impl->m_dragStartPos);
+        auto const newLocation = ccpAdd(touchLocation, m_impl->dragStartPos);
 
-        auto clampX = std::max(0.f, std::min(newLocation.x, m_impl->m_screenSize.width - getScaledContentWidth()));
-        auto clampY = std::max(0.f, std::min(newLocation.y, m_impl->m_screenSize.height - getScaledContentHeight()));
+        auto clampX = std::max(0.f, std::min(newLocation.x, m_impl->screenSize.width - getScaledContentWidth()));
+        auto clampY = std::max(0.f, std::min(newLocation.y, m_impl->screenSize.height - getScaledContentHeight()));
 
         setPosition(ccp(clampX, clampY));
 
-        m_impl->m_isMoving = true;
+        m_impl->isMoving = true;
     };
 };
 
 void ActionMenu::ccTouchEnded(CCTouch* touch, CCEvent* ev) {
-    if (!m_impl->m_isMoving && m_impl->m_toggleOnPress) {
-        if (m_impl->m_menu) {
-            m_impl->m_menu->setVisible(!m_impl->m_show);
-            if (m_impl->m_menuBg) m_impl->m_menuBg->setVisible(!m_impl->m_show);
+    if (!m_impl->isMoving && m_impl->toggleOnPress) {
+        if (m_impl->menu) {
+            m_impl->menu->setVisible(!m_impl->show);
+            if (m_impl->menuBg) m_impl->menuBg->setVisible(!m_impl->show);
 
-            m_impl->m_show = !qga->setSavedValue("visible", !m_impl->m_show);
+            m_impl->show = !qga->setSavedValue("visible", !m_impl->show);
         };
     };
 
     // reset state
-    m_impl->m_isDragging = false;
-    m_impl->m_isMoving = false;
+    m_impl->isDragging = false;
+    m_impl->isMoving = false;
 
     // store position
     qga->setSavedValue<float>("menu-x", getPositionX());
     qga->setSavedValue<float>("menu-y", getPositionY());
 
-    m_impl->m_isAnimating = true;
+    m_impl->isAnimating = true;
 
-    if (m_impl->m_sprite) {
+    if (m_impl->sprite) {
         // reset scale
-        m_impl->m_sprite->stopAllActions();
-        m_impl->m_sprite->runAction(CCSequence::create(
+        m_impl->sprite->stopAllActions();
+        m_impl->sprite->runAction(CCSequence::create(
             CCSpawn::createWithTwoActions(
                 CCFadeTo::create(0.125f, 255),
-                CCEaseElasticOut::create(CCScaleTo::create(0.875f, m_impl->m_scale))
+                CCEaseElasticOut::create(CCScaleTo::create(0.875f, m_impl->scale))
             ),
             CCCallFunc::create(this, callfunc_selector(ActionMenu::onScaleEnd)),
             CCDelayTime::create(1.f),
-            CCFadeTo::create(0.5f, m_impl->m_opacity),
+            CCFadeTo::create(0.5f, m_impl->opacity),
             nullptr
         ));
     };

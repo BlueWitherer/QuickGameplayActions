@@ -7,8 +7,8 @@
         "ios": "2.2074"
     },
     "id": "cheeseworks.quickgameplayactions",
-    "name": "Quick Gameplay Actions",
-    "version": "1.0.1",
+    "name": "Gameplay Shortcuts",
+    "version": "1.0.2",
     "developers": [
         "Cheeseworks"
     ],
@@ -26,25 +26,31 @@
     "settings": {
         "btns": {
             "type": "title",
-            "name": "Features",
-            "description": "The features you want to easily access in-game."
+            "name": "Shortcuts",
+            "description": "The shortcuts you want to easily access in-game."
         },
         "restart": {
             "type": "bool",
             "name": "Restart Level",
-            "description": "Create the button to restart the level.",
+            "description": "Create the button to instantly restart the level.",
             "default": true
         },
         "practice": {
             "type": "bool",
             "name": "Practice Mode",
-            "description": "Create the button to toggle Practice Mode.",
+            "description": "Create the button to quickly toggle Practice Mode.",
             "default": true
+        },
+        "pause": {
+            "type": "bool",
+            "name": "Pause Level",
+            "description": "Create the button to pause the level.",
+            "default": false
         },
         "exit": {
             "type": "bool",
             "name": "Exit Level",
-            "description": "Create the button to exit the level.",
+            "description": "Create the button to instantly exit the level. <cy>This might break other mods' overlays!</c>",
             "default": false
         },
         "ui": {
