@@ -1,12 +1,9 @@
-name: Release Mod
+name: Release Geode Mod
 
 on:
     push:
         tags:
             - "v*"
-
-permissions:
-    contents: write
 
 jobs:
     build:
@@ -66,59 +63,57 @@ jobs:
         name: Release
         runs-on: ubuntu-latest
         needs: ["package"]
+        permissions:
+            contents: write
 
         steps:
+            - uses: actions/checkout@v4
+
+            - name: Publish release
+              id: publish-release
+              uses: hiimjasmine00/release-geode-mod@main
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Get latest release tag
+              id: getrelease
+              run: echo "tag=$(curl -s https://api.github.com/repos/${{ github.event.repository.full_name }}/releases/latest | jq -r .tag_name // "v0.0.0")" >> $GITHUB_OUTPUT
+
             - uses: actions/download-artifact@v4
               with:
                   path: ./artifacts/
 
-            - name: Extract changelog section
-              id: changelog
-              run: |
-                  TAG=${GITHUB_REF_NAME}
-                  BODY=$(awk -v tag="${TAG}" '$0=="# " tag{found=1; next} found && /^# /{exit} found{print}' changelog.md || true)
-                  if [ -z "$BODY" ]; then
-                      BODY="Release for commit ${GITHUB_SHA}."
-                  fi
-                  echo "body<<EOF" >> $GITHUB_OUTPUT
-                  printf "%s\n" "$BODY" >> $GITHUB_OUTPUT
-                  echo "EOF" >> $GITHUB_OUTPUT
-
-            - name: Publish Release
-              uses: softprops/action-gh-release@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                  tag_name: ${{ github.ref_name }}
-                  name: "Release ${{ github.ref_name }}"
-                  body: ${{ steps.changelog.outputs.body }}
-                  prerelease: false
-                  files: |
-                      ./artifacts/Build Output/*.geode
-                      ./artifacts/Build Output/*.pdb
-
-            - name: Publish to Geode
-              uses: hiimjasmine00/release-geode-mod/publish@main
-              with:
-                  token: ${{ secrets.GITHUB_TOKEN }}
-
             - name: Check for Discord webhook URL
-              id: check
+              id: check-discord
               run: echo "has-nightly-webhook=${{ secrets.NIGHTLY_WEBHOOK != '' }}" >> $GITHUB_OUTPUT
 
             - name: Send Discord webhook
-              if: ${{ steps.check.outputs.has-nightly-webhook == 'true' }}
+              if: ${{ steps.check-discord.outputs.has-nightly-webhook == 'true' }}
               uses: prevter/discord-webhook@main
               with:
                   webhook-url: ${{ secrets.NIGHTLY_WEBHOOK }}
-                  files: |
-                      ./artifacts/Build Output/*.geode
-                      ./artifacts/Build Output/*.pdb
-                  embed-title: "[${{ github.repository }}] Release ${{ github.ref_name }}"
-                  embed-description: "Release for commit **[`${{ github.sha }}`](${{ github.event.repository.html_url}}/commit/${{ github.sha }})**."
+                  files: ./artifacts/Build Output/*.geode
+                  embed-title: "[${{ github.repository }}] Release `${{ github.ref_name }}`"
+                  embed-description: |
+                      ${{ steps.publish-release.outputs.changelog }}
+
+                      [`Changes since previous release`](${{ github.event.repository.html_url }}/compare/${{ steps.getrelease.outputs.tag }}...${{ github.ref_name }})
                   embed-color: "#3fb950"
                   embed-url: ${{ github.event.repository.html_url }}/releases/tag/${{ github.ref_name }}
                   embed-author: ${{ github.actor }}
                   embed-author-icon: "https://avatars.githubusercontent.com/u/${{ github.actor_id }}?v=4"
                   embed-thumbnail: "https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/${{ github.event.repository.default_branch }}/logo.png"
                   embed-timestamp: "now"
+
+    geode:
+        name: Publish to Geode
+        runs-on: ubuntu-latest
+        needs: ["release"]
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Publish to Geode
+              uses: hiimjasmine00/release-geode-mod/publish@main
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
