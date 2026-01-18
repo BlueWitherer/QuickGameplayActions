@@ -101,12 +101,16 @@ bool ActionMenu::init(PlayLayer* pl) {
                     m_impl->playLayer->togglePracticeMode(!m_impl->playLayer->m_isPracticeMode);
 
                     if (auto btn = typeinfo_cast<CCMenuItemSpriteExtra*>(sender)) {
-                        auto btnSprite = CCSprite::createWithSpriteFrameName(m_impl->playLayer->m_isPracticeMode ? "GJ_normalBtn_001.png" : "GJ_practiceBtn_001.png");
-                        btnSprite->setPosition(btn->getScaledContentSize() / 2.f);
+                        auto btnSprite = CCSprite::createWithSpriteFrameName(
+                            m_impl->playLayer->m_isPracticeMode ?
+                            "GJ_normalBtn_001.png" :
+                            "GJ_practiceBtn_001.png"
+                        );
                         btnSprite->setOpacity(m_impl->opacity);
                         btnSprite->setScale(m_impl->scale);
 
                         btn->setNormalImage(btnSprite);
+                        btn->updateSprite();
                     };
                 };
             },
