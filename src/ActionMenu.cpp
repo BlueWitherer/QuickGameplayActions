@@ -102,8 +102,9 @@ bool ActionMenu::init(PlayLayer* pl) {
 
                     if (auto btn = typeinfo_cast<CCMenuItemSpriteExtra*>(sender)) {
                         auto btnSprite = CCSprite::createWithSpriteFrameName(m_impl->playLayer->m_isPracticeMode ? "GJ_normalBtn_001.png" : "GJ_practiceBtn_001.png");
-                        btnSprite->setScale(m_impl->scale);
+                        btnSprite->setPosition(btn->getScaledContentSize() / 2.f);
                         btnSprite->setOpacity(m_impl->opacity);
+                        btnSprite->setScale(m_impl->scale);
 
                         btn->setNormalImage(btnSprite);
                     };
