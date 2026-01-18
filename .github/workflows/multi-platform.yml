@@ -74,7 +74,7 @@ jobs:
 
             - name: Get latest release tag
               id: getrelease
-              run: echo "tag=$(curl -s https://api.github.com/repos/${{ github.event.repository.full_name }}/releases/latest | jq -r .tag_name // "v0.0.0")" >> $GITHUB_OUTPUT
+              run: echo "tag=$(curl -s https://api.github.com/repos/${{ github.event.repository.full_name }}/releases/latest | jq -r '.tag_name // "v0.0.0"')" >> $GITHUB_OUTPUT
 
             - name: Publish Nightly release
               uses: andelf/nightly-release@main
@@ -85,7 +85,7 @@ jobs:
                   name: "Development Release"
                   body: |
                       **Development build for commit ${{ github.sha }}**.
-                      [`Changes since previous release`](${{ github.event.repository.html_url }}/compare/${{ steps.getrelease.outputs.tag }}...nightly)
+                      > [`Changes since previous release`](${{ github.event.repository.html_url }}/compare/${{ steps.getrelease.outputs.tag }}...nightly)
                   files: |
                       ./artifacts/Build Output/*.*
 
@@ -103,7 +103,7 @@ jobs:
                   embed-title: "[${{ github.repository }}] Nightly Release"
                   embed-description: |
                       **Development build for commit [`${{ github.sha }}`](${{ github.event.repository.html_url}}/commit/${{ github.sha }})**.
-                      [`Changes since previous release`](${{ github.event.repository.html_url }}/compare/${{ steps.getrelease.outputs.tag }}...nightly)
+                      > [`Changes since previous release`](${{ github.event.repository.html_url }}/compare/${{ steps.getrelease.outputs.tag }}...nightly)
                   embed-color: "#d29922"
                   embed-url: ${{ github.event.repository.html_url }}/releases/tag/nightly
                   embed-author: ${{ github.actor }}
