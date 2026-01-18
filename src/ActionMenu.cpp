@@ -83,14 +83,64 @@ bool ActionMenu::init(PlayLayer* pl) {
     m_impl->menu->setVisible(m_impl->show);
     m_impl->menu->setLayout(layout);
 
-    std::vector<ActionItem> btns = {
-        { m_impl->useRestart, "GJ_replayBtn_001.png", "restart-btn", menu_selector(ActionMenu::onRestart) },
-        { m_impl->usePractice, "GJ_practiceBtn_001.png", "toggle-practice-btn", menu_selector(ActionMenu::onPractice) },
-        { m_impl->usePause, "GJ_pauseBtn_001.png", "pause-btn", menu_selector(ActionMenu::onPause), 1.62f },
-        { m_impl->useExit, "GJ_menuBtn_001.png", "exit-btn", menu_selector(ActionMenu::onExit) },
-    };
+    auto const btns = std::to_array<ActionItem>({
+        {
+            m_impl->useRestart,
+            "GJ_replayBtn_001.png",
+            "restart-btn",
+            [this](CCMenuItem*) {
+                if (m_impl->playLayer) m_impl->playLayer->resetLevel();
+            },
+        },
+        {
+            m_impl->usePractice,
+            "GJ_practiceBtn_001.png",
+            "toggle-practice-btn",
+            [this](CCMenuItem* sender) {
+                if (m_impl->playLayer) {
+                    m_impl->playLayer->togglePracticeMode(!m_impl->playLayer->m_isPracticeMode);
 
-    if (pl->m_isPlatformer) btns.push_back({ m_impl->useRestart, "GJ_replayFullBtn_001.png", "full-restart-btn", menu_selector(ActionMenu::onFullRestart) });
+                    if (auto btn = typeinfo_cast<CCMenuItemSpriteExtra*>(sender)) {
+                        auto btnSprite = CCSprite::createWithSpriteFrameName(m_impl->playLayer->m_isPracticeMode ? "GJ_normalBtn_001.png" : "GJ_practiceBtn_001.png");
+                        btnSprite->setScale(m_impl->scale);
+                        btnSprite->setOpacity(m_impl->opacity);
+
+                        btn->setNormalImage(btnSprite);
+                    };
+                };
+            },
+        },
+        {
+            m_impl->usePause,
+            "GJ_pauseBtn_001.png",
+            "pause-btn",
+            [this](CCMenuItem*) {
+                if (m_impl->playLayer) m_impl->playLayer->pauseGame(false);
+            },
+            1.62f,
+        },
+        {
+            m_impl->useExit,
+            "GJ_menuBtn_001.png",
+            "exit-btn",
+            [this](CCMenuItem*) {
+                if (m_impl->playLayer) {
+                    m_impl->playLayer->onQuit();
+
+                    // @geode-ignore(unknown-resource)
+                    if (auto fmod = FMODAudioEngine::sharedEngine()) fmod->playEffectAsync("quitSound_01.ogg");
+                };
+            },
+        },
+        {
+            m_impl->useRestart && pl->m_isPlatformer,
+            "GJ_replayFullBtn_001.png",
+            "full-restart-btn",
+            [this](CCMenuItem*) {
+                if (m_impl->playLayer) m_impl->playLayer->resetLevelFromStart();
+            },
+        },
+                                                });
 
     for (auto const& b : btns) {
         if (b.enabled) {
@@ -98,10 +148,9 @@ bool ActionMenu::init(PlayLayer* pl) {
             btnSprite->setScale(m_impl->scale * b.scale);
             btnSprite->setOpacity(m_impl->opacity);
 
-            auto btn = CCMenuItemSpriteExtra::create(
+            auto btn = CCMenuItemExt::createSpriteExtra(
                 btnSprite,
-                this,
-                b.selector
+                std::move(b.callback)
             );
             btn->setID(b.id);
 
@@ -123,31 +172,6 @@ bool ActionMenu::init(PlayLayer* pl) {
     addChild(m_impl->menuBg, 0);
 
     return true;
-};
-
-void ActionMenu::onRestart(CCObject*) {
-    if (m_impl->playLayer) m_impl->playLayer->resetLevel();
-};
-
-void ActionMenu::onFullRestart(CCObject*) {
-    if (m_impl->playLayer) m_impl->playLayer->resetLevelFromStart();
-};
-
-void ActionMenu::onPractice(CCObject*) {
-    if (m_impl->playLayer) m_impl->playLayer->togglePracticeMode(!m_impl->playLayer->m_isPracticeMode);
-};
-
-void ActionMenu::onPause(CCObject*) {
-    if (m_impl->playLayer) m_impl->playLayer->pauseGame(false);
-};
-
-void ActionMenu::onExit(CCObject*) {
-    if (m_impl->playLayer) {
-        m_impl->playLayer->onQuit();
-
-        // @geode-ignore(unknown-resource)
-        if (auto fmod = FMODAudioEngine::sharedEngine()) fmod->playEffectAsync("quitSound_01.ogg");
-    };
 };
 
 void ActionMenu::setOpacity(GLubyte opacity) {
