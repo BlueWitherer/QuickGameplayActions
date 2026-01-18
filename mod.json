@@ -50,7 +50,7 @@
         "exit": {
             "type": "bool",
             "name": "Exit Level",
-            "description": "Create the button to instantly exit the level. <cy>This might break other mods' overlays!</c>",
+            "description": "Create the button to instantly exit the level. <cr>This might break other mods' overlays!</c>",
             "default": false
         },
         "ui": {
