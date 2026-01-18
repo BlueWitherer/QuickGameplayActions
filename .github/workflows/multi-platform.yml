@@ -85,7 +85,7 @@ jobs:
                   name: "Development Release"
                   body: |
                       **Development build for commit ${{ github.sha }}**.
-                      > [`Changes since previous release`](${{ github.event.repository.html_url }}/compare/${{ steps.getrelease.outputs.tag }}...nightly)
+                      > [`View Changes`](${{ github.event.repository.html_url }}/compare/${{ steps.getrelease.outputs.tag }}...nightly)
                   files: |
                       ./artifacts/Build Output/*.*
 
@@ -103,7 +103,7 @@ jobs:
                   embed-title: "[${{ github.repository }}] Nightly Release"
                   embed-description: |
                       **Development build for commit [`${{ github.sha }}`](${{ github.event.repository.html_url}}/commit/${{ github.sha }})**.
-                      > [`Changes since previous release`](${{ github.event.repository.html_url }}/compare/${{ steps.getrelease.outputs.tag }}...nightly)
+                      > [`View Changes`](${{ github.event.repository.html_url }}/compare/${{ steps.getrelease.outputs.tag }}...nightly)
                   embed-color: "#d29922"
                   embed-url: ${{ github.event.repository.html_url }}/releases/tag/nightly
                   embed-author: ${{ github.actor }}
