@@ -111,6 +111,8 @@ bool ActionMenu::init(PlayLayer* pl) {
 
                         btn->setNormalImage(btnSprite);
                         btn->updateSprite();
+                    } else {
+                        log::error("Couldn't get toggle practice button");
                     };
                 };
             },
@@ -155,7 +157,7 @@ bool ActionMenu::init(PlayLayer* pl) {
 
             auto btn = CCMenuItemExt::createSpriteExtra(
                 btnSprite,
-                std::move(b.callback)
+                b.callback
             );
             btn->setID(b.id);
 

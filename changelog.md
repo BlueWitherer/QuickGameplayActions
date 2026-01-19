@@ -1,3 +1,6 @@
+# v1.0.3 
+- Internal fixes
+
 # v1.0.2
 - Added toggle setting `Pause Level`
 - Added toggle visual to Practice Mode shortcut button
