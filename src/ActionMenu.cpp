@@ -288,6 +288,6 @@ ActionMenu* ActionMenu::create(PlayLayer* pl) {
         return ret;
     };
 
-    CC_SAFE_DELETE(ret);
+    delete ret;
     return nullptr;
 };
