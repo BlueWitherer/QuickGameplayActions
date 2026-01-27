@@ -13,6 +13,12 @@
         "Cheeseworks"
     ],
     "description": "Mobile-friendly UI for quick in-game actions.",
+    "dependencies": {
+        "geode.node-ids": {
+            "importance": "required",
+            "version": ">=1.21.0"
+        }
+    },
     "links": {
         "source": "https://github.com/BlueWitherer/QuickGameplayActions",
         "homepage": "https://www.cheeseworks.gay/",
