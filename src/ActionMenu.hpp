@@ -13,7 +13,7 @@ private:
         bool enabled;
         const char* sprite;
         const char* id;
-        std::function<void(CCMenuItem*)> callback;
+        FunctionRef<void(CCMenuItem*)> callback;
         float scale = 1.f;
     };
 

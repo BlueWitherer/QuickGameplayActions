@@ -88,7 +88,7 @@ bool ActionMenu::init(PlayLayer* pl) {
             m_impl->useRestart,
             "GJ_replayBtn_001.png",
             "restart-btn",
-            [this](CCMenuItem*) {
+            [this](auto) {
                 if (m_impl->playLayer) m_impl->playLayer->resetLevel();
             },
         },
@@ -121,7 +121,7 @@ bool ActionMenu::init(PlayLayer* pl) {
             m_impl->usePause,
             "GJ_pauseBtn_001.png",
             "pause-btn",
-            [this](CCMenuItem*) {
+            [this](auto) {
                 if (m_impl->playLayer) m_impl->playLayer->pauseGame(false);
             },
             1.62f,
@@ -130,7 +130,7 @@ bool ActionMenu::init(PlayLayer* pl) {
             m_impl->useExit,
             "GJ_menuBtn_001.png",
             "exit-btn",
-            [this](CCMenuItem*) {
+            [this](auto) {
                 if (m_impl->playLayer) {
                     m_impl->playLayer->onQuit();
 
@@ -143,7 +143,7 @@ bool ActionMenu::init(PlayLayer* pl) {
             m_impl->useRestart && pl->m_isPlatformer,
             "GJ_replayFullBtn_001.png",
             "full-restart-btn",
-            [this](CCMenuItem*) {
+            [this](auto) {
                 if (m_impl->playLayer) m_impl->playLayer->resetLevelFromStart();
             },
         },
