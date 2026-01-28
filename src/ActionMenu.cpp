@@ -29,10 +29,10 @@ public:
 
     CCSize const screenSize = CCDirector::sharedDirector()->getWinSize();
     CCPoint dragStartPos = { 0, 0 };
+    CCPoint comparePos = { 0, 0 };
 
     bool isAnimating = false;
     bool isDragging = false;
-    bool isMoving = false;
 };
 
 ActionMenu::ActionMenu() {
@@ -83,7 +83,7 @@ bool ActionMenu::init(PlayLayer* pl) {
     m_impl->menu->setVisible(m_impl->show);
     m_impl->menu->setLayout(layout);
 
-    auto const btns = std::to_array<ActionItem>({
+    auto btns = std::to_array<ActionItem>({
         {
             m_impl->useRestart,
             "GJ_replayBtn_001.png",
@@ -147,9 +147,9 @@ bool ActionMenu::init(PlayLayer* pl) {
                 if (m_impl->playLayer) m_impl->playLayer->resetLevelFromStart();
             },
         },
-                                                });
+                                          });
 
-    for (auto const& b : btns) {
+    for (auto& b : btns) {
         if (b.enabled) {
             auto btnSprite = CCSprite::createWithSpriteFrameName(b.sprite);
             btnSprite->setScale(m_impl->scale * b.scale);
@@ -157,7 +157,7 @@ bool ActionMenu::init(PlayLayer* pl) {
 
             auto btn = CCMenuItemExt::createSpriteExtra(
                 btnSprite,
-                b.callback
+                std::move(b.callback)
             );
             btn->setID(b.id);
 
@@ -181,9 +181,14 @@ bool ActionMenu::init(PlayLayer* pl) {
     return true;
 };
 
+bool ActionMenu::isDistant(CCPoint const& ccp1, CCPoint const& ccp2, float max) const {
+    auto dist = ccpDistance(ccp1, ccp2);
+    return ((max * -1.f) >= dist) || (dist <= max);
+};
+
 void ActionMenu::setOpacity(GLubyte opacity) {
     m_impl->opacity = opacity;
-    if (m_impl->sprite) m_impl->sprite->setOpacity(opacity);
+    if (m_impl->sprite) m_impl->sprite->setOpacity(opacity / 1.25);
 };
 
 void ActionMenu::setScale(float scale) {
@@ -200,19 +205,34 @@ void ActionMenu::setScale(float scale) {
     };
 };
 
+void ActionMenu::setVisible(bool visible) {
+    if (m_impl->menu) {
+        m_impl->menu->setVisible(visible);
+        if (m_impl->menuBg) m_impl->menuBg->setVisible(visible);
+
+        m_impl->show = !qga->setSavedValue("visible", visible);
+
+        log::info("Toggled action menu {}", m_impl->show ? "on" : "off");
+    } else {
+        log::error("Couldn't toggle action menu visibility");
+    };
+};
+
 void ActionMenu::onScaleEnd() {
     m_impl->isAnimating = false;
 };
 
 bool ActionMenu::ccTouchBegan(CCTouch* touch, CCEvent* ev) {
     if (m_impl->sprite) {
-        auto const touchLocation = convertToNodeSpace(touch->getLocation());
         auto const box = m_impl->sprite->boundingBox();
 
-        if (box.containsPoint(touchLocation)) {
+        if (box.containsPoint(convertToNodeSpace(touch->getLocation()))) {
             m_impl->isDragging = true;
 
+            m_impl->comparePos = getPosition();
             m_impl->dragStartPos = ccpSub(getPosition(), touch->getLocation());
+
+            log::info("Menu position starts at ({}, {})", m_impl->dragStartPos.x, m_impl->dragStartPos.y);
 
             m_impl->sprite->stopAllActions();
             m_impl->isAnimating = true;
@@ -240,44 +260,38 @@ void ActionMenu::ccTouchMoved(CCTouch* touch, CCEvent* ev) {
         auto clampY = std::max(0.f, std::min(newLocation.y, m_impl->screenSize.height - getScaledContentHeight()));
 
         setPosition(ccp(clampX, clampY));
-
-        m_impl->isMoving = true;
     };
 };
 
 void ActionMenu::ccTouchEnded(CCTouch* touch, CCEvent* ev) {
-    if (!m_impl->isMoving && m_impl->toggleOnPress) {
-        if (m_impl->menu) {
-            m_impl->menu->setVisible(!m_impl->show);
-            if (m_impl->menuBg) m_impl->menuBg->setVisible(!m_impl->show);
+    if (m_impl->isDragging) {
+        auto pos = ccpSub(getPosition(), touch->getLocation());
+        if (m_impl->toggleOnPress && isDistant(m_impl->comparePos, getPosition())) setVisible(!m_impl->show);
 
-            m_impl->show = !qga->setSavedValue("visible", !m_impl->show);
+        m_impl->isDragging = false;
+
+        qga->setSavedValue<float>("menu-x", getPositionX());
+        qga->setSavedValue<float>("menu-y", getPositionY());
+
+        if (m_impl->sprite) {
+            m_impl->isAnimating = true;
+
+            // reset scale
+            m_impl->sprite->stopAllActions();
+            m_impl->sprite->runAction(CCSequence::create(
+                CCSpawn::createWithTwoActions(
+                    CCFadeTo::create(0.125f, 255),
+                    CCEaseElasticOut::create(CCScaleTo::create(0.875f, m_impl->scale))
+                ),
+                CCCallFunc::create(this, callfunc_selector(ActionMenu::onScaleEnd)),
+                CCDelayTime::create(1.f),
+                CCFadeTo::create(0.5f, m_impl->opacity / 1.25),
+                nullptr
+            ));
         };
-    };
 
-    // reset state
-    m_impl->isDragging = false;
-    m_impl->isMoving = false;
-
-    // store position
-    qga->setSavedValue<float>("menu-x", getPositionX());
-    qga->setSavedValue<float>("menu-y", getPositionY());
-
-    m_impl->isAnimating = true;
-
-    if (m_impl->sprite) {
-        // reset scale
-        m_impl->sprite->stopAllActions();
-        m_impl->sprite->runAction(CCSequence::create(
-            CCSpawn::createWithTwoActions(
-                CCFadeTo::create(0.125f, 255),
-                CCEaseElasticOut::create(CCScaleTo::create(0.875f, m_impl->scale))
-            ),
-            CCCallFunc::create(this, callfunc_selector(ActionMenu::onScaleEnd)),
-            CCDelayTime::create(1.f),
-            CCFadeTo::create(0.5f, m_impl->opacity),
-            nullptr
-        ));
+        m_impl->dragStartPos = std::move(pos);
+        log::info("Menu position stopped and saved at ({}, {})", m_impl->dragStartPos.x, m_impl->dragStartPos.y);
     };
 };
 

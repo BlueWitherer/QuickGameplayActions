@@ -13,9 +13,11 @@ private:
         bool enabled;
         const char* sprite;
         const char* id;
-        FunctionRef<void(CCMenuItem*)> callback;
+        Function<void(CCMenuItem*)> callback;
         float scale = 1.f;
     };
+
+    bool isDistant(CCPoint const& ccp1, CCPoint const& ccp2, float max = 5.f) const;
 
 protected:
     ActionMenu();
@@ -25,6 +27,8 @@ protected:
 
     void setOpacity(GLubyte opacity);
     void setScale(float scale) override;
+
+    void setVisible(bool visible) override;
 
     bool init(PlayLayer* pl);
 
