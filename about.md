@@ -1,4 +1,4 @@
-# Gameplay Shortcuts
+# ![🕹️](frame:GJ_menuBtn_001.png?scale=0.325) Gameplay Shortcuts
 **Mobile-friendly UI for quick in-game actions.**
 
 *by [Cheeseworks](user:6408873)!*
