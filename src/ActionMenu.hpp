@@ -21,7 +21,7 @@ private:
 
 protected:
     ActionMenu();
-    virtual ~ActionMenu();
+    ~ActionMenu();
 
     void onScaleEnd();
 
