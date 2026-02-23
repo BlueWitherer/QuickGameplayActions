@@ -14,7 +14,7 @@ public:
     Ref<CircleButtonSprite> sprite = nullptr;
 
     CCMenu* menu = nullptr;
-    CCScale9Sprite* menuBg = nullptr;
+    NineSlice* menuBg = nullptr;
 
     bool useRestart = qga->getSettingValue<bool>("restart");
     bool usePractice = qga->getSettingValue<bool>("practice");
@@ -35,10 +35,7 @@ public:
     bool isDragging = false;
 };
 
-ActionMenu::ActionMenu() {
-    m_impl = std::make_unique<Impl>();
-};
-
+ActionMenu::ActionMenu() : m_impl(std::make_unique<Impl>()) {};
 ActionMenu::~ActionMenu() {};
 
 bool ActionMenu::init(PlayLayer* pl) {
@@ -96,7 +93,7 @@ bool ActionMenu::init(PlayLayer* pl) {
             m_impl->usePractice,
             "GJ_practiceBtn_001.png",
             "toggle-practice-btn",
-            [this](CCMenuItem* sender) {
+            [this](Button* sender) {
                 if (m_impl->playLayer) {
                     m_impl->playLayer->togglePracticeMode(!m_impl->playLayer->m_isPracticeMode);
 
@@ -155,7 +152,7 @@ bool ActionMenu::init(PlayLayer* pl) {
             btnSprite->setScale(m_impl->scale * b.scale);
             btnSprite->setOpacity(m_impl->opacity);
 
-            auto btn = CCMenuItemExt::createSpriteExtra(
+            auto btn = Button::createWithNode(
                 btnSprite,
                 std::move(b.callback)
             );
@@ -168,12 +165,12 @@ bool ActionMenu::init(PlayLayer* pl) {
     addChild(m_impl->menu, 1);
     m_impl->menu->updateLayout();
 
-    m_impl->menuBg = CCScale9Sprite::create("square02_001.png");
-    m_impl->menuBg->setScale(0.25f);
+    m_impl->menuBg = NineSlice::create("square02_001.png");
     m_impl->menuBg->setOpacity(m_impl->opacity / 2);
     m_impl->menuBg->setAnchorPoint(m_impl->menu->getAnchorPoint());
-    m_impl->menuBg->setContentSize({ (m_impl->menu->getScaledContentWidth() + 15.f) * 4.f, (m_impl->menu->getScaledContentHeight() * 4.f) + 5.f });
+    m_impl->menuBg->setContentSize({ m_impl->menu->getScaledContentWidth() + 15.f, m_impl->menu->getScaledContentHeight() + 5.f });
     m_impl->menuBg->setPosition(m_impl->sprite->getPosition());
+    m_impl->menuBg->setScaleMultiplier(0.5f);
     m_impl->menuBg->setVisible(m_impl->show);
 
     addChild(m_impl->menuBg, 0);

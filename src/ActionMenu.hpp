@@ -2,18 +2,20 @@
 
 #include <Geode/Geode.hpp>
 
+#include <Geode/ui/Button.hpp>
+
 using namespace geode::prelude;
 
-class ActionMenu : public CCLayer {
+class ActionMenu final : public CCLayer {
 private:
     class Impl;
     std::unique_ptr<Impl> m_impl;
 
-    struct ActionItem {
+    struct ActionItem final {
         bool enabled;
         const char* sprite;
         const char* id;
-        Function<void(CCMenuItem*)> callback;
+        Button::ButtonCallback callback;
         float scale = 1.f;
     };
 
