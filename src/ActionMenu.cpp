@@ -13,7 +13,7 @@ public:
 
     Ref<CircleButtonSprite> sprite = nullptr;
 
-    CCMenu* menu = nullptr;
+    CCNode* container = nullptr;
     NineSlice* menuBg = nullptr;
 
     bool useRestart = qga->getSettingValue<bool>("restart");
@@ -72,13 +72,13 @@ bool ActionMenu::init(PlayLayer* pl) {
         ->setGap(2.5f)
         ->setAutoGrowAxis(0.f);
 
-    m_impl->menu = CCMenu::create();
-    m_impl->menu->setID("actions-menu");
-    m_impl->menu->setAnchorPoint({ 0, 1 });
-    m_impl->menu->setContentSize({ 0.f, 25.f });
-    m_impl->menu->setPosition({ (getScaledContentWidth() / 2.f) + 7.5f, (getScaledContentHeight() / 2.f) - 2.5f });
-    m_impl->menu->setVisible(m_impl->show);
-    m_impl->menu->setLayout(layout);
+    m_impl->container = CCNode::create();
+    m_impl->container->setID("actions-menu");
+    m_impl->container->setAnchorPoint({ 0, 1 });
+    m_impl->container->setContentSize({ 0.f, 25.f });
+    m_impl->container->setPosition({ (getScaledContentWidth() / 2.f) + 7.5f, (getScaledContentHeight() / 2.f) - 2.5f });
+    m_impl->container->setVisible(m_impl->show);
+    m_impl->container->setLayout(layout);
 
     auto btns = std::to_array<ActionItem>({
         {
@@ -144,7 +144,7 @@ bool ActionMenu::init(PlayLayer* pl) {
                 if (m_impl->playLayer) m_impl->playLayer->resetLevelFromStart();
             },
         },
-                                          });
+        });
 
     for (auto& b : btns) {
         if (b.enabled) {
@@ -158,17 +158,17 @@ bool ActionMenu::init(PlayLayer* pl) {
             );
             btn->setID(b.id);
 
-            m_impl->menu->addChild(btn);
+            m_impl->container->addChild(btn);
         };
     };
 
-    addChild(m_impl->menu, 1);
-    m_impl->menu->updateLayout();
+    addChild(m_impl->container, 1);
+    m_impl->container->updateLayout();
 
     m_impl->menuBg = NineSlice::create("square02_001.png");
     m_impl->menuBg->setOpacity(m_impl->opacity / 2);
-    m_impl->menuBg->setAnchorPoint(m_impl->menu->getAnchorPoint());
-    m_impl->menuBg->setContentSize({ m_impl->menu->getScaledContentWidth() + 15.f, m_impl->menu->getScaledContentHeight() + 5.f });
+    m_impl->menuBg->setAnchorPoint(m_impl->container->getAnchorPoint());
+    m_impl->menuBg->setContentSize({ m_impl->container->getScaledContentWidth() + 15.f, m_impl->container->getScaledContentHeight() + 5.f });
     m_impl->menuBg->setPosition(m_impl->sprite->getPosition());
     m_impl->menuBg->setScaleMultiplier(0.5f);
     m_impl->menuBg->setVisible(m_impl->show);
@@ -197,14 +197,14 @@ void ActionMenu::setScale(float scale) {
             setContentSize(m_impl->sprite->getScaledContentSize());
         };
 
-        if (m_impl->menu) m_impl->menu->setScale(scale);
+        if (m_impl->container) m_impl->container->setScale(scale);
         if (m_impl->menuBg) m_impl->menuBg->setScale(scale);
     };
 };
 
 void ActionMenu::setVisible(bool visible) {
-    if (m_impl->menu) {
-        m_impl->menu->setVisible(visible);
+    if (m_impl->container) {
+        m_impl->container->setVisible(visible);
         if (m_impl->menuBg) m_impl->menuBg->setVisible(visible);
 
         m_impl->show = !qga->setSavedValue("visible", visible);
