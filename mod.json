@@ -100,7 +100,7 @@
         "toggle-press": {
             "type": "bool",
             "name": "Toggle on Press",
-            "description": "Toggle the visibility of the menu when pressing the drag button without moving it. <co>This will force the menu to always be visible.</c>",
+            "description": "Toggle the visibility of the menu when pressing the drag button without moving it. <co>**Disabling this** will force the menu to always be visible.</c>",
             "default": true
         }
     },
