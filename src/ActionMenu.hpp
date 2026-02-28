@@ -2,8 +2,6 @@
 
 #include <Geode/Geode.hpp>
 
-#include <Geode/ui/Button.hpp>
-
 using namespace geode::prelude;
 
 class ActionMenu final : public CCLayer {
@@ -15,7 +13,7 @@ private:
         bool enabled;
         const char* sprite;
         const char* id;
-        Button::ButtonCallback callback;
+        Function<void(CCMenuItem*)> callback;
         float scale = 1.f;
     };
 
