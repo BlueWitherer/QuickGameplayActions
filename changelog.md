@@ -1,3 +1,7 @@
+# v1.0.5 
+- Fixed bug with quitting levels
+- Minor adjustments
+
 # v1.0.4 
 - Ported to Geometry Dash version `2.2081`
   - Bumped Geode loader support to `v5.0.0`

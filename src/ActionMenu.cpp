@@ -9,8 +9,6 @@ static auto qga = Mod::get();
 
 class ActionMenu::Impl final {
 public:
-    Ref<PlayLayer> playLayer = nullptr;
-
     Ref<CircleButtonSprite> sprite = nullptr;
 
     CCMenu* menu = nullptr;
@@ -33,14 +31,17 @@ public:
 
     bool isAnimating = false;
     bool isDragging = false;
+
+    bool isDistant(CCPoint const& ccp1, CCPoint const& ccp2, float max) const {
+        auto dist = ccpDistance(ccp1, ccp2);
+        return ((max * -1.f) >= dist) || (dist <= max);
+    };
 };
 
 ActionMenu::ActionMenu() : m_impl(std::make_unique<Impl>()) {};
 ActionMenu::~ActionMenu() {};
 
 bool ActionMenu::init(PlayLayer* pl) {
-    m_impl->playLayer = pl;
-
     if (!CCLayer::init()) return false;
 
     // get the saved position
@@ -84,21 +85,21 @@ bool ActionMenu::init(PlayLayer* pl) {
             m_impl->useRestart,
             "GJ_replayBtn_001.png",
             "restart-btn",
-            [this](auto) {
-                if (m_impl->playLayer) m_impl->playLayer->resetLevel();
+            [this, pl](auto) {
+                if (pl) pl->resetLevel();
             },
         },
         {
             m_impl->usePractice,
             "GJ_practiceBtn_001.png",
             "toggle-practice-btn",
-            [this](CCMenuItem* sender) {
-                if (m_impl->playLayer) {
-                    m_impl->playLayer->togglePracticeMode(!m_impl->playLayer->m_isPracticeMode);
+            [this, pl](CCMenuItem* sender) {
+                if (pl) {
+                    pl->togglePracticeMode(!pl->m_isPracticeMode);
 
                     if (auto btn = typeinfo_cast<CCMenuItemSpriteExtra*>(sender)) {
                         auto btnSprite = CCSprite::createWithSpriteFrameName(
-                            m_impl->playLayer->m_isPracticeMode ?
+                            pl->m_isPracticeMode ?
                             "GJ_normalBtn_001.png" :
                             "GJ_practiceBtn_001.png"
                         );
@@ -117,8 +118,8 @@ bool ActionMenu::init(PlayLayer* pl) {
             m_impl->usePause,
             "GJ_pauseBtn_001.png",
             "pause-btn",
-            [this](auto) {
-                if (m_impl->playLayer) m_impl->playLayer->pauseGame(false);
+            [this, pl](auto) {
+                if (pl) pl->pauseGame(false);
             },
             1.62f,
         },
@@ -126,8 +127,8 @@ bool ActionMenu::init(PlayLayer* pl) {
             m_impl->useExit,
             "GJ_menuBtn_001.png",
             "exit-btn",
-            [this](auto) {
-                if (auto pl = m_impl->playLayer.take()) {
+            [this, pl](auto) {
+                if (pl) {
                     pl->onQuit();
 
                     // @geode-ignore(unknown-resource)
@@ -139,8 +140,8 @@ bool ActionMenu::init(PlayLayer* pl) {
             m_impl->useRestart && pl->m_isPlatformer,
             "GJ_replayFullBtn_001.png",
             "full-restart-btn",
-            [this](auto) {
-                if (m_impl->playLayer) m_impl->playLayer->resetLevelFromStart();
+            [this, pl](auto) {
+                if (pl) pl->resetLevelFromStart();
             },
         },
         });
@@ -175,11 +176,6 @@ bool ActionMenu::init(PlayLayer* pl) {
     addChild(m_impl->menuBg, 0);
 
     return true;
-};
-
-bool ActionMenu::isDistant(CCPoint const& ccp1, CCPoint const& ccp2, float max) const {
-    auto dist = ccpDistance(ccp1, ccp2);
-    return ((max * -1.f) >= dist) || (dist <= max);
 };
 
 void ActionMenu::setOpacity(GLubyte opacity) {
@@ -262,7 +258,7 @@ void ActionMenu::ccTouchMoved(CCTouch* touch, CCEvent* ev) {
 void ActionMenu::ccTouchEnded(CCTouch* touch, CCEvent* ev) {
     if (m_impl->isDragging) {
         auto pos = ccpSub(getPosition(), touch->getLocation());
-        if (m_impl->toggleOnPress && isDistant(m_impl->comparePos, getPosition())) setVisible(!m_impl->show);
+        if (m_impl->toggleOnPress && m_impl->isDistant(m_impl->comparePos, getPosition(), 5.f)) setVisible(!m_impl->show);
 
         m_impl->isDragging = false;
 

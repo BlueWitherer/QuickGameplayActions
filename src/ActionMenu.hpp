@@ -17,8 +17,6 @@ private:
         float scale = 1.f;
     };
 
-    bool isDistant(CCPoint const& ccp1, CCPoint const& ccp2, float max = 5.f) const;
-
 protected:
     ActionMenu();
     ~ActionMenu();
