@@ -55,8 +55,6 @@ bool ActionMenu::init(PlayLayer* pl) {
     setTouchEnabled(true);
     setZOrder(99);
 
-    if (!m_impl->toggleOnPress) setVisible(true);
-
     m_impl->sprite = CircleButtonSprite::createWithSpriteFrameName("edit_areaModeBtn04_001.png");
     m_impl->sprite->setScale(m_impl->scale * 0.875f);
     m_impl->sprite->setAnchorPoint({ 0.5, 0.5 });
@@ -70,6 +68,8 @@ bool ActionMenu::init(PlayLayer* pl) {
 
     addChild(m_impl->sprite, 9);
 
+    auto showMenu = m_impl->toggleOnPress ? true : m_impl->show;
+
     auto layout = RowLayout::create()
         ->setGap(2.5f)
         ->setAutoGrowAxis(0.f);
@@ -79,7 +79,7 @@ bool ActionMenu::init(PlayLayer* pl) {
     m_impl->menu->setAnchorPoint({ 0, 1 });
     m_impl->menu->setContentSize({ 0.f, 25.f });
     m_impl->menu->setPosition({ (getScaledContentWidth() / 2.f) + 7.5f, (getScaledContentHeight() / 2.f) - 5.f });
-    m_impl->menu->setVisible(m_impl->show);
+    m_impl->menu->setVisible(showMenu);
     m_impl->menu->setLayout(layout);
 
     auto btns = std::to_array<ActionItem>({
@@ -173,7 +173,7 @@ bool ActionMenu::init(PlayLayer* pl) {
     m_impl->menuBg->setContentSize({ m_impl->menu->getScaledContentWidth() + 15.f, m_impl->menu->getScaledContentHeight() + 5.f });
     m_impl->menuBg->setPosition(m_impl->sprite->getPosition());
     m_impl->menuBg->setScaleMultiplier(0.5f);
-    m_impl->menuBg->setVisible(m_impl->show);
+    m_impl->menuBg->setVisible(showMenu);
 
     addChild(m_impl->menuBg, 0);
 
