@@ -68,7 +68,7 @@ bool ActionMenu::init(PlayLayer* pl) {
 
     addChild(m_impl->sprite, 9);
 
-    auto showMenu = m_impl->toggleOnPress ? true : m_impl->show;
+    auto showMenu = m_impl->toggleOnPress ? m_impl->show : true;
 
     auto layout = RowLayout::create()
         ->setGap(2.5f)
