@@ -128,8 +128,8 @@ bool ActionMenu::init(PlayLayer* pl) {
             "GJ_menuBtn_001.png",
             "exit-btn",
             [this](auto) {
-                if (m_impl->playLayer) {
-                    m_impl->playLayer->onQuit();
+                if (auto pl = m_impl->playLayer.take()) {
+                    pl->onQuit();
 
                     // @geode-ignore(unknown-resource)
                     if (auto fmod = FMODAudioEngine::sharedEngine()) fmod->playEffectAsync("quitSound_01.ogg");
