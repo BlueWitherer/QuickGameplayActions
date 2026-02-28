@@ -1,4 +1,5 @@
 # v1.0.5 
+- Toggle setting *`Toggle on Press`* will force menu to always be visible
 - Fixed bug with quitting levels
 - Minor adjustments
 

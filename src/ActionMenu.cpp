@@ -55,6 +55,8 @@ bool ActionMenu::init(PlayLayer* pl) {
     setTouchEnabled(true);
     setZOrder(99);
 
+    if (!m_impl->toggleOnPress) setVisible(true);
+
     m_impl->sprite = CircleButtonSprite::createWithSpriteFrameName("edit_areaModeBtn04_001.png");
     m_impl->sprite->setScale(m_impl->scale * 0.875f);
     m_impl->sprite->setAnchorPoint({ 0.5, 0.5 });

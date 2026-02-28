@@ -32,25 +32,25 @@
         "restart": {
             "type": "bool",
             "name": "Restart Level",
-            "description": "Create the button to instantly restart the level.",
+            "description": "Enable the button to instantly restart the level.",
             "default": true
         },
         "practice": {
             "type": "bool",
             "name": "Practice Mode",
-            "description": "Create the button to quickly toggle Practice Mode.",
+            "description": "Enable the button to quickly toggle Practice Mode in the level.",
             "default": true
         },
         "pause": {
             "type": "bool",
             "name": "Pause Level",
-            "description": "Create the button to pause the level.",
+            "description": "Enable the button to pause the level.",
             "default": false
         },
         "exit": {
             "type": "bool",
             "name": "Exit Level",
-            "description": "Create the button to instantly exit the level.",
+            "description": "Enable the button to instantly exit the level.",
             "default": false
         },
         "ui": {
@@ -100,7 +100,7 @@
         "toggle-press": {
             "type": "bool",
             "name": "Toggle on Press",
-            "description": "Toggle the visibility of the menu when pressing the drag button without moving it.",
+            "description": "Toggle the visibility of the menu when pressing the drag button without moving it. <co>This will force the menu to always be visible.</c>",
             "default": true
         }
     },
