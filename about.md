@@ -8,7 +8,7 @@
 ---
 
 ## About
-This mod adds a menu in the level UI to work with your gameplay more quickly!
+This mod adds a draggable menu in the level UI to work with your gameplay more quickly!
 
 ---
 
