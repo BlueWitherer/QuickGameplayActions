@@ -200,10 +200,12 @@ void ActionMenu::setScale(float scale) {
 
 void ActionMenu::setVisible(bool visible) {
     if (m_impl->menu) {
+        m_impl->show = visible;
+
         m_impl->menu->setVisible(visible);
         if (m_impl->menuBg) m_impl->menuBg->setVisible(visible);
 
-        m_impl->show = !qga->setSavedValue("visible", visible);
+        (void)qga->setSavedValue("visible", visible);
 
         log::info("Toggled action menu {}", m_impl->show ? "on" : "off");
     } else {
@@ -283,7 +285,7 @@ void ActionMenu::ccTouchEnded(CCTouch* touch, CCEvent* ev) {
             ));
         };
 
-        m_impl->dragStartPos = std::move(pos);
+        m_impl->dragStartPos = pos;
         log::info("Menu position stopped and saved at ({}, {})", m_impl->dragStartPos.x, m_impl->dragStartPos.y);
     };
 };
