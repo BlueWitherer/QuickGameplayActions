@@ -33,8 +33,7 @@ public:
     bool isDragging = false;
 
     bool isDistant(CCPoint const& ccp1, CCPoint const& ccp2, float max) const {
-        auto dist = ccpDistance(ccp1, ccp2);
-        return ((max * -1.f) >= dist) || (dist <= max);
+        return ccpDistance(ccp1, ccp2) <= max;
     };
 };
 
@@ -45,7 +44,7 @@ bool ActionMenu::init(PlayLayer* pl) {
     if (!CCLayer::init()) return false;
 
     // get the saved position
-    auto x = qga->getSavedValue<float>("menu-x", 75.f);
+    auto x = qga->getSavedValue<float>("menu-x", m_impl->screenSize.width - 75.f);
     auto y = qga->getSavedValue<float>("menu-y", m_impl->screenSize.height - 75.f);
 
     setID("menu"_spr);
@@ -53,7 +52,7 @@ bool ActionMenu::init(PlayLayer* pl) {
     setAnchorPoint({ 0.5, 0.5 });
     setTouchMode(kCCTouchesOneByOne);
     setTouchEnabled(true);
-    setZOrder(99);
+    setZOrder(9);
 
     m_impl->sprite = CircleButtonSprite::createWithSpriteFrameName("edit_areaModeBtn04_001.png");
     m_impl->sprite->setScale(m_impl->scale * 0.875f);
@@ -87,7 +86,7 @@ bool ActionMenu::init(PlayLayer* pl) {
             m_impl->useRestart,
             "GJ_replayBtn_001.png",
             "restart-btn",
-            [this, pl](auto) {
+            [pl](auto) {
                 if (pl) pl->resetLevel();
             },
         },
@@ -120,7 +119,7 @@ bool ActionMenu::init(PlayLayer* pl) {
             m_impl->usePause,
             "GJ_pauseBtn_001.png",
             "pause-btn",
-            [this, pl](auto) {
+            [pl](auto) {
                 if (pl) pl->pauseGame(false);
             },
             1.62f,
@@ -129,7 +128,7 @@ bool ActionMenu::init(PlayLayer* pl) {
             m_impl->useExit,
             "GJ_menuBtn_001.png",
             "exit-btn",
-            [this, pl](auto) {
+            [pl](auto) {
                 if (pl) {
                     pl->onQuit();
 
@@ -142,7 +141,7 @@ bool ActionMenu::init(PlayLayer* pl) {
             m_impl->useRestart && pl->m_isPlatformer,
             "GJ_replayFullBtn_001.png",
             "full-restart-btn",
-            [this, pl](auto) {
+            [pl](auto) {
                 if (pl) pl->resetLevelFromStart();
             },
         },

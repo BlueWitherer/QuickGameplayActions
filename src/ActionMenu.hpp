@@ -25,7 +25,6 @@ protected:
 
     void setOpacity(GLubyte opacity);
     void setScale(float scale) override;
-
     void setVisible(bool visible) override;
 
     bool init(PlayLayer* pl);
