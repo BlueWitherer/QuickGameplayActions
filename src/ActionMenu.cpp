@@ -26,8 +26,8 @@ public:
     int64_t opacity = qga->getSettingValue<int64_t>("opacity");
 
     CCSize const screenSize = CCDirector::sharedDirector()->getWinSize();
-    CCPoint dragStartPos = { 0, 0 };
-    CCPoint comparePos = { 0, 0 };
+    CCPoint dragStartPos = {0, 0};
+    CCPoint comparePos = {0, 0};
 
     bool isAnimating = false;
     bool isDragging = false;
@@ -48,36 +48,36 @@ bool ActionMenu::init(PlayLayer* pl) {
     auto y = qga->getSavedValue<float>("menu-y", m_impl->screenSize.height - 75.f);
 
     setID("menu"_spr);
-    setPosition({ x, y });
-    setAnchorPoint({ 0.5, 0.5 });
+    setPosition({x, y});
+    setAnchorPoint({0.5, 0.5});
     setTouchMode(kCCTouchesOneByOne);
     setTouchEnabled(true);
     setZOrder(9);
 
     m_impl->sprite = CircleButtonSprite::createWithSpriteFrameName("edit_areaModeBtn04_001.png");
     m_impl->sprite->setScale(m_impl->scale * 0.875f);
-    m_impl->sprite->setAnchorPoint({ 0.5, 0.5 });
+    m_impl->sprite->setAnchorPoint({0.5, 0.5});
 
     setContentSize(m_impl->sprite->getScaledContentSize());
 
     m_impl->sprite->setPosition(getScaledContentSize() / 2.f);
 
-    setScale(m_impl->scale); // set initial scale
-    setOpacity(m_impl->opacity); // set initial opacity
+    setScale(m_impl->scale);      // set initial scale
+    setOpacity(m_impl->opacity);  // set initial opacity
 
     addChild(m_impl->sprite, 9);
 
     auto showMenu = m_impl->toggleOnPress ? m_impl->show : true;
 
     auto layout = RowLayout::create()
-        ->setGap(2.5f)
-        ->setAutoGrowAxis(0.f);
+                      ->setGap(2.5f)
+                      ->setAutoGrowAxis(0.f);
 
     m_impl->menu = CCMenu::create();
     m_impl->menu->setID("actions-menu");
-    m_impl->menu->setAnchorPoint({ 0, 1 });
-    m_impl->menu->setContentSize({ 0.f, 25.f });
-    m_impl->menu->setPosition({ (getScaledContentWidth() / 2.f) + 7.5f, (getScaledContentHeight() / 2.f) - 5.f });
+    m_impl->menu->setAnchorPoint({0, 1});
+    m_impl->menu->setContentSize({0.f, 25.f});
+    m_impl->menu->setPosition({(getScaledContentWidth() / 2.f) + 7.5f, (getScaledContentHeight() / 2.f) - 5.f});
     m_impl->menu->setVisible(showMenu);
     m_impl->menu->setLayout(layout);
 
@@ -99,11 +99,7 @@ bool ActionMenu::init(PlayLayer* pl) {
                     pl->togglePracticeMode(!pl->m_isPracticeMode);
 
                     if (auto btn = typeinfo_cast<CCMenuItemSpriteExtra*>(sender)) {
-                        auto btnSprite = CCSprite::createWithSpriteFrameName(
-                            pl->m_isPracticeMode ?
-                            "GJ_normalBtn_001.png" :
-                            "GJ_practiceBtn_001.png"
-                        );
+                        auto btnSprite = CCSprite::createWithSpriteFrameName(pl->m_isPracticeMode ? "GJ_normalBtn_001.png" : "GJ_practiceBtn_001.png");
                         btnSprite->setOpacity(m_impl->opacity);
                         btnSprite->setScale(m_impl->scale);
 
@@ -145,7 +141,7 @@ bool ActionMenu::init(PlayLayer* pl) {
                 if (pl) pl->resetLevelFromStart();
             },
         },
-        });
+    });
 
     for (auto& b : btns) {
         if (b.enabled) {
@@ -155,8 +151,7 @@ bool ActionMenu::init(PlayLayer* pl) {
 
             auto btn = CCMenuItemExt::createSpriteExtra(
                 btnSprite,
-                std::move(b.callback)
-            );
+                std::move(b.callback));
             btn->setID(b.id);
 
             m_impl->menu->addChild(btn);
@@ -169,7 +164,7 @@ bool ActionMenu::init(PlayLayer* pl) {
     m_impl->menuBg = NineSlice::create("square02_001.png");
     m_impl->menuBg->setOpacity(m_impl->opacity / 2);
     m_impl->menuBg->setAnchorPoint(m_impl->menu->getAnchorPoint());
-    m_impl->menuBg->setContentSize({ m_impl->menu->getScaledContentWidth() + 15.f, m_impl->menu->getScaledContentHeight() + 5.f });
+    m_impl->menuBg->setContentSize({m_impl->menu->getScaledContentWidth() + 15.f, m_impl->menu->getScaledContentHeight() + 5.f});
     m_impl->menuBg->setPosition(m_impl->sprite->getPosition());
     m_impl->menuBg->setScaleMultiplier(0.5f);
     m_impl->menuBg->setVisible(showMenu);
@@ -234,12 +229,10 @@ bool ActionMenu::ccTouchBegan(CCTouch* touch, CCEvent* ev) {
             m_impl->sprite->runAction(CCSequence::createWithTwoActions(
                 CCSpawn::createWithTwoActions(
                     CCEaseExponentialOut::create(CCScaleTo::create(0.25f, m_impl->scale * 0.875f)),
-                    CCFadeTo::create(0.25f, 255)
-                ),
-                CCCallFunc::create(this, callfunc_selector(ActionMenu::onScaleEnd))
-            ));
+                    CCFadeTo::create(0.25f, 255)),
+                CCCallFunc::create(this, callfunc_selector(ActionMenu::onScaleEnd))));
 
-            return true; // swallow touch
+            return true;  // swallow touch
         };
     };
 
@@ -276,13 +269,11 @@ void ActionMenu::ccTouchEnded(CCTouch* touch, CCEvent* ev) {
             m_impl->sprite->runAction(CCSequence::create(
                 CCSpawn::createWithTwoActions(
                     CCFadeTo::create(0.125f, 255),
-                    CCEaseElasticOut::create(CCScaleTo::create(0.875f, m_impl->scale))
-                ),
+                    CCEaseElasticOut::create(CCScaleTo::create(0.875f, m_impl->scale))),
                 CCCallFunc::create(this, callfunc_selector(ActionMenu::onScaleEnd)),
                 CCDelayTime::create(1.f),
                 CCFadeTo::create(0.5f, m_impl->opacity / 1.25),
-                nullptr
-            ));
+                nullptr));
         };
 
         m_impl->dragStartPos = pos;
