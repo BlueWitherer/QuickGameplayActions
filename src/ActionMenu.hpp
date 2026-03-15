@@ -4,6 +4,12 @@
 
 using namespace geode::prelude;
 
+template <>
+struct matjson::Serialize<CCPoint> final {
+    static geode::Result<CCPoint> fromJson(matjson::Value const& value);
+    static matjson::Value toJson(CCPoint const& value);
+};
+
 class ActionMenu final : public CCLayer {
 private:
     class Impl;

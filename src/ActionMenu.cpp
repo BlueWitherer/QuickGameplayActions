@@ -1,12 +1,26 @@
 #include "ActionMenu.hpp"
 
 #include <Geode/Geode.hpp>
-#include "Geode/cocos/cocoa/CCGeometry.h"
 
 using namespace geode::prelude;
 
 // it's modding time >:3
 static auto qga = Mod::get();
+
+Result<CCPoint> matjson::Serialize<CCPoint>::fromJson(matjson::Value const& value) {
+    GEODE_UNWRAP_INTO(float x, value["x"].asDouble());
+    GEODE_UNWRAP_INTO(float y, value["y"].asDouble());
+
+    return Ok(CCPoint{x, y});
+};
+
+matjson::Value matjson::Serialize<CCPoint>::toJson(CCPoint const& value) {
+    auto obj = matjson::Value();
+    obj["x"] = value.x;
+    obj["y"] = value.y;
+
+    return obj;
+};
 
 class ActionMenu::Impl final {
 public:
