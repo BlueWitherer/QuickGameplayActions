@@ -1,6 +1,7 @@
 #include "ActionMenu.hpp"
 
 #include <Geode/Geode.hpp>
+#include "Geode/cocos/cocoa/CCGeometry.h"
 
 using namespace geode::prelude;
 
@@ -44,15 +45,13 @@ bool ActionMenu::init(PlayLayer* pl) {
     if (!CCLayer::init()) return false;
 
     // get the saved position
-    auto x = qga->getSavedValue<float>("menu-x", m_impl->screenSize.width - 75.f);
-    auto y = qga->getSavedValue<float>("menu-y", m_impl->screenSize.height - 75.f);
+    auto pos = qga->getSavedValue<CCPoint>("menu-pos", {75.f, m_impl->screenSize.height - 75.f});
 
     setID("menu"_spr);
-    setPosition({x, y});
-    setAnchorPoint({0.5, 0.5});
+    setPosition({pos.x, pos.y});
     setTouchMode(kCCTouchesOneByOne);
+    setAnchorPoint({0.5, 0.5});
     setTouchEnabled(true);
-    setZOrder(9);
 
     m_impl->sprite = CircleButtonSprite::createWithSpriteFrameName("edit_areaModeBtn04_001.png");
     m_impl->sprite->setScale(m_impl->scale * 0.875f);
@@ -258,8 +257,7 @@ void ActionMenu::ccTouchEnded(CCTouch* touch, CCEvent* ev) {
 
         m_impl->isDragging = false;
 
-        qga->setSavedValue<float>("menu-x", getPositionX());
-        qga->setSavedValue<float>("menu-y", getPositionY());
+        qga->setSavedValue<CCPoint>("menu-pos", getPosition());
 
         if (m_impl->sprite) {
             m_impl->isAnimating = true;

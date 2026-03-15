@@ -5,6 +5,6 @@
 class $modify(ShortcutsPlayLayer, PlayLayer) {
     void setupHasCompleted() {
         PlayLayer::setupHasCompleted();
-        if (auto menu = ActionMenu::create(this)) m_uiLayer->addChild(menu, 99);
+        if (auto menu = ActionMenu::create(this)) m_uiLayer->addChild(menu, 9);
     };
 };
