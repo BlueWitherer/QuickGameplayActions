@@ -1,6 +1,6 @@
 # v1.0.7 
 - Set default position to left-hand side
-- Reworked position save data
+- Reworked menu position save data format
 
 # v1.0.6 
 - Minor tweaks
