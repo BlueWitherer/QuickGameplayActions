@@ -1,3 +1,6 @@
+# v1.0.8 
+- Internal stability improvements
+
 # v1.0.7 
 - Set default position to left-hand side
 - Reworked menu position save data format

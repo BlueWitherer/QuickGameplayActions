@@ -15,21 +15,24 @@ private:
     class Impl;
     std::unique_ptr<Impl> m_impl;
 
+    using Callback = Function<void(CCMenuItem*)>;
+
     struct ActionItem final {
         bool enabled;
         const char* sprite;
         const char* id;
-        Function<void(CCMenuItem*)> callback;
+        Callback callback;
         float scale = 1.f;
     };
+
+    void onScaleEnd();
 
 protected:
     ActionMenu();
     ~ActionMenu();
 
-    void onScaleEnd();
-
     void setOpacity(GLubyte opacity);
+
     void setScale(float scale) override;
     void setVisible(bool visible) override;
 

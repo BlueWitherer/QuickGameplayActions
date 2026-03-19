@@ -99,27 +99,29 @@ bool ActionMenu::init(PlayLayer* pl) {
             m_impl->useRestart,
             "GJ_replayBtn_001.png",
             "restart-btn",
-            [pl](auto) {
-                if (pl) pl->resetLevel();
+            [playLayer = WeakRef(pl)](auto) {
+                if (auto pl = playLayer.lock()) pl->resetLevel();
             },
         },
         {
             m_impl->usePractice,
             "GJ_practiceBtn_001.png",
             "toggle-practice-btn",
-            [this, pl](CCMenuItem* sender) {
-                if (pl) {
+            [self = WeakRef(this), playLayer = WeakRef(pl)](CCMenuItem* sender) {
+                if (auto pl = playLayer.lock()) {
                     pl->togglePracticeMode(!pl->m_isPracticeMode);
 
-                    if (auto btn = typeinfo_cast<CCMenuItemSpriteExtra*>(sender)) {
-                        auto btnSprite = CCSprite::createWithSpriteFrameName(pl->m_isPracticeMode ? "GJ_normalBtn_001.png" : "GJ_practiceBtn_001.png");
-                        btnSprite->setOpacity(m_impl->opacity);
-                        btnSprite->setScale(m_impl->scale);
+                    if (auto s = self.lock()) {
+                        if (auto btn = typeinfo_cast<CCMenuItemSpriteExtra*>(sender)) {
+                            auto btnSprite = CCSprite::createWithSpriteFrameName(pl->m_isPracticeMode ? "GJ_normalBtn_001.png" : "GJ_practiceBtn_001.png");
+                            btnSprite->setOpacity(s->m_impl->opacity);
+                            btnSprite->setScale(s->m_impl->scale);
 
-                        btn->setNormalImage(btnSprite);
-                        btn->updateSprite();
-                    } else {
-                        log::error("Couldn't get toggle practice button");
+                            btn->setNormalImage(btnSprite);
+                            btn->updateSprite();
+                        } else {
+                            log::error("Couldn't get toggle practice button");
+                        };
                     };
                 };
             },
@@ -128,8 +130,8 @@ bool ActionMenu::init(PlayLayer* pl) {
             m_impl->usePause,
             "GJ_pauseBtn_001.png",
             "pause-btn",
-            [pl](auto) {
-                if (pl) pl->pauseGame(false);
+            [playLayer = WeakRef(pl)](auto) {
+                if (auto pl = playLayer.lock()) pl->pauseGame(false);
             },
             1.62f,
         },
@@ -137,8 +139,8 @@ bool ActionMenu::init(PlayLayer* pl) {
             m_impl->useExit,
             "GJ_menuBtn_001.png",
             "exit-btn",
-            [pl](auto) {
-                if (pl) {
+            [playLayer = WeakRef(pl)](auto) {
+                if (auto pl = playLayer.lock()) {
                     pl->onQuit();
 
                     // @geode-ignore(unknown-resource)
@@ -150,8 +152,8 @@ bool ActionMenu::init(PlayLayer* pl) {
             m_impl->useRestart && pl->m_isPlatformer,
             "GJ_replayFullBtn_001.png",
             "full-restart-btn",
-            [pl](auto) {
-                if (pl) pl->resetLevelFromStart();
+            [playLayer = WeakRef(pl)](auto) {
+                if (auto pl = playLayer.lock()) pl->resetLevelFromStart();
             },
         },
     });
@@ -215,7 +217,7 @@ void ActionMenu::setVisible(bool visible) {
 
         (void)qga->setSavedValue("visible", visible);
 
-        log::info("Toggled action menu {}", m_impl->show ? "on" : "off");
+        log::debug("Toggled action menu {}", m_impl->show ? "on" : "off");
     } else {
         log::error("Couldn't toggle action menu visibility");
     };
@@ -235,7 +237,7 @@ bool ActionMenu::ccTouchBegan(CCTouch* touch, CCEvent* ev) {
             m_impl->comparePos = getPosition();
             m_impl->dragStartPos = ccpSub(getPosition(), touch->getLocation());
 
-            log::info("Menu position starts at ({}, {})", m_impl->dragStartPos.x, m_impl->dragStartPos.y);
+            log::debug("Menu position starts at ({}, {})", m_impl->dragStartPos.x, m_impl->dragStartPos.y);
 
             m_impl->sprite->stopAllActions();
             m_impl->isAnimating = true;
@@ -289,7 +291,8 @@ void ActionMenu::ccTouchEnded(CCTouch* touch, CCEvent* ev) {
         };
 
         m_impl->dragStartPos = pos;
-        log::info("Menu position stopped and saved at ({}, {})", m_impl->dragStartPos.x, m_impl->dragStartPos.y);
+
+        log::debug("Menu position stopped and saved at ({}, {})", m_impl->dragStartPos.x, m_impl->dragStartPos.y);
     };
 };
 
