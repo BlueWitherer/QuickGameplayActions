@@ -1,3 +1,7 @@
+# v1.0.9 
+- Fixed level exit issue
+- Increased menu overlay priority
+
 # v1.0.8 
 - Internal stability improvements
 

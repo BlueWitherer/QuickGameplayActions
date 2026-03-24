@@ -1,4 +1,4 @@
-#include "ActionMenu.hpp"
+#include "ActionMenu.h"
 
 #include <Geode/Geode.hpp>
 
@@ -99,17 +99,17 @@ bool ActionMenu::init(PlayLayer* pl) {
             m_impl->useRestart,
             "GJ_replayBtn_001.png",
             "restart-btn",
-            [playLayer = WeakRef(pl)](auto) {
-                if (auto pl = playLayer.lock()) pl->resetLevel();
+            [pl](auto) {
+                if (pl) pl->resetLevel();
             },
         },
         {
             m_impl->usePractice,
             "GJ_practiceBtn_001.png",
             "toggle-practice-btn",
-            [self = WeakRef(this), playLayer = WeakRef(pl)](CCMenuItem* sender) {
-                if (auto pl = playLayer.lock()) {
-                    pl->togglePracticeMode(!pl->m_isPracticeMode);
+            [self = WeakRef(this), pl](CCMenuItem* sender) {
+                {
+                    if (pl) pl->togglePracticeMode(!pl->m_isPracticeMode);
 
                     if (auto s = self.lock()) {
                         if (auto btn = typeinfo_cast<CCMenuItemSpriteExtra*>(sender)) {
@@ -130,8 +130,8 @@ bool ActionMenu::init(PlayLayer* pl) {
             m_impl->usePause,
             "GJ_pauseBtn_001.png",
             "pause-btn",
-            [playLayer = WeakRef(pl)](auto) {
-                if (auto pl = playLayer.lock()) pl->pauseGame(false);
+            [pl](auto) {
+                if (pl) pl->pauseGame(false);
             },
             1.62f,
         },
@@ -139,9 +139,9 @@ bool ActionMenu::init(PlayLayer* pl) {
             m_impl->useExit,
             "GJ_menuBtn_001.png",
             "exit-btn",
-            [playLayer = WeakRef(pl)](auto) {
-                if (auto pl = playLayer.lock()) {
-                    pl->onQuit();
+            [pl](auto) {
+                {
+                    if (pl) pl->onQuit();
 
                     // @geode-ignore(unknown-resource)
                     if (auto fmod = FMODAudioEngine::sharedEngine()) fmod->playEffectAsync("quitSound_01.ogg");
@@ -152,8 +152,8 @@ bool ActionMenu::init(PlayLayer* pl) {
             m_impl->useRestart && pl->m_isPlatformer,
             "GJ_replayFullBtn_001.png",
             "full-restart-btn",
-            [playLayer = WeakRef(pl)](auto) {
-                if (auto pl = playLayer.lock()) pl->resetLevelFromStart();
+            [pl](auto) {
+                if (pl) pl->resetLevelFromStart();
             },
         },
     });
@@ -247,7 +247,7 @@ bool ActionMenu::ccTouchBegan(CCTouch* touch, CCEvent* ev) {
                     CCFadeTo::create(0.25f, 255)),
                 CCCallFunc::create(this, callfunc_selector(ActionMenu::onScaleEnd))));
 
-            return true;  // swallow touch
+            return true;  // swallow touch like a...
         };
     };
 
