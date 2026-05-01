@@ -1,4 +1,4 @@
-# [<img src="logo.png" width="25" alt="The mod's logo." />](https://www.geode-sdk.org/mods/cheeseworks.quickgameplayactions) Gameplay Shortcuts
+# [<img src="logo.png" width="25" alt="The mod's logo." />](https://geode-sdk.org/mods/cheeseworks.quickgameplayactions) Gameplay Shortcuts
 Mobile-friendly UI for quick in-game actions.
 
 ---
@@ -7,7 +7,7 @@ Mobile-friendly UI for quick in-game actions.
 
 > [![Version](https://img.shields.io/github/v/release/BlueWitherer/QuickGameplayActions?include_prereleases&sort=semver&display_name=release&style=for-the-badge&logo=github&logoColor=ffffff&label=Version)](../../releases/) [![License](https://img.shields.io/github/license/BlueWitherer/QuickGameplayActions?style=for-the-badge&logo=gnu&logoColor=ffffff&label=License)](LICENSE.md)
 >  
-> [![Downloads](https://img.shields.io/github/downloads/BlueWitherer/QuickGameplayActions/total?style=for-the-badge&logo=geode&logoColor=ffffff&label=Downloads)](https://www.geode-sdk.org/mods/cheeseworks.quickgameplayactions)
+> [![Downloads](https://img.shields.io/github/downloads/BlueWitherer/QuickGameplayActions/total?style=for-the-badge&logo=geode&logoColor=ffffff&label=Downloads)](https://geode-sdk.org/mods/cheeseworks.quickgameplayactions)
 
 > [!TIP]
 > *This mod has settings you can utilize to customize your experience.*
